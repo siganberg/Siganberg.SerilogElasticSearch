@@ -11,11 +11,8 @@ using Siganberg.SirilogElasticSearch.Utilities;
 
 namespace Siganberg.SirilogElasticSearch.Formatter
 {
-    /// <summary>
-    ///
-    /// </summary>
     [ExcludeFromCodeCoverage]
-    public class KibanaFormatter : ITextFormatter
+    public class ElasticSearchFormatter : ITextFormatter
     {
         private readonly Dictionary<string, string> _mappings = new Dictionary<string, string>
         {
@@ -29,11 +26,6 @@ namespace Siganberg.SirilogElasticSearch.Formatter
             {"RequestBody", "requestBody"},
         };
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="logEvent"></param>
-        /// <param name="output"></param>
         public void Format(LogEvent logEvent, TextWriter output)
         {
             output.Write("{");

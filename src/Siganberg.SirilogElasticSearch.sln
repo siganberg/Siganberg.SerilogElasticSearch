@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SirilogElasticSearch", "Siganberg.SirilogElasticSearch\Siganberg.SirilogElasticSearch.csproj", "{C96D337C-1323-481D-A458-B46CBE3D9929}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SirilogElasticSearch.SampleApp", "Siganberg.SirilogElasticSearch.SampleApp\Siganberg.SirilogElasticSearch.SampleApp.csproj", "{80CA3E9A-2C82-43ED-9244-FE87F3BC688E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{C96D337C-1323-481D-A458-B46CBE3D9929}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C96D337C-1323-481D-A458-B46CBE3D9929}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C96D337C-1323-481D-A458-B46CBE3D9929}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80CA3E9A-2C82-43ED-9244-FE87F3BC688E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80CA3E9A-2C82-43ED-9244-FE87F3BC688E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80CA3E9A-2C82-43ED-9244-FE87F3BC688E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80CA3E9A-2C82-43ED-9244-FE87F3BC688E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

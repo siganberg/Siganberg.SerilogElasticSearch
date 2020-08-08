@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -14,31 +12,19 @@ using Siganberg.SirilogElasticSearch.Utilities;
 
 namespace Siganberg.SirilogElasticSearch.Extensions
 {
-    /// <summary>
-    ///
-    /// </summary>
-    [ExcludeFromCodeCoverage]
     public static class ApplicationBuilderExtension
     {
-        private static readonly List<string> ExcludedPath = new List<string>
+        public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder, Func< HttpContext, bool> func = null)
         {
-            "healthz",
-            "swagger"
-        };
+            var context = builder.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
+            var requestLoggingRules = builder.ApplicationServices.GetRequiredService<IRequestLoggingRules>();
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <returns></returns>
-        public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder)
-        {
-            StaticHttpContextAccessor.Configure(builder.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
+            StaticHttpContextAccessor.Configure(context);
             return builder
                 .UseMiddleware<CorrelationIdMiddleWare>()
                 .UseSerilogRequestLogging(options =>
                 {
-                    options.GetLevel = ExcludePaths;
+                    options.GetLevel = (ctx, _, ex) => EvaluateExclusionRules(ctx, ex, func, requestLoggingRules);
                     options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
                     {
                         httpContext.Request.EnableBuffering();
@@ -58,23 +44,20 @@ namespace Siganberg.SirilogElasticSearch.Extensions
         {
             return string.Join("\\n", requestHeaders);
         }
-
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="ctx"></param>
-        /// <param name="_"></param>
-        /// <param name="ex"></param>
-        /// <returns></returns>
-        public static LogEventLevel ExcludePaths(HttpContext ctx, double _, Exception ex)
+        private static LogEventLevel EvaluateExclusionRules(HttpContext ctx,  Exception ex, Func<HttpContext, bool> func = null, IRequestLoggingRules rules = null)
         {
             if (ex != null) return LogEventLevel.Error;
 
             if (ctx.Response.StatusCode >= 500) return LogEventLevel.Error;
 
-            if (ExcludedPath.Any(a => ctx.Request.Path.ToString().Contains(a)))
-                return LogEventLevel.Verbose;
+            var result = true;
+
+            if (func != null)
+                result = func.Invoke(ctx);
+            else if (rules != null)
+                result = rules.Evaluate(ctx);
+
+            if (result == false) return LogEventLevel.Verbose;
 
             return LogEventLevel.Information;
         }

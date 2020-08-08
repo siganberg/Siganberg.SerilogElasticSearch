@@ -3,10 +3,11 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <PackageId>Siganberg.SirilogElasticSearch</PackageId>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageProjectUrl>https://github.com/francischie/Siganberg.SirilogElasticSearch</PackageProjectUrl>
     </PropertyGroup>
 
     <ItemGroup>
