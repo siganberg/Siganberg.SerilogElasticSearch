@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <PackageId>Siganberg.SerilogElasticSearch</PackageId>
-        <Version>1.0.1</Version>
+        <Version>1.0.2</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -11,7 +11,8 @@
         <AssemblyName>Siganberg.SerilogElasticSearch</AssemblyName>
         <RootNamespace>Siganberg.SerilogElasticSearch</RootNamespace>
         <PackageReleaseNotes>
-            - Fixed optional RequestLoggingOptions
+            - Fixed messsage template formatting
+            - Fixed path value. Old path contains QueryString.
         </PackageReleaseNotes>
     </PropertyGroup>
 

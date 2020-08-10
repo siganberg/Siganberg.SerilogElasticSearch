@@ -10,8 +10,9 @@ namespace Siganberg.SerilogElasticSearch.SampleApp
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddHttpContextAccessor();
-            services.AddSingleton<IRequestLoggingOptions, RequestLoggingOptions>();
+            services.AddHttpContextAccessor()
+                .AddHttpClient();
+            //services.AddSingleton<IRequestLoggingOptions, RequestLoggingOptions>();
             services.AddMvc();
         }
 

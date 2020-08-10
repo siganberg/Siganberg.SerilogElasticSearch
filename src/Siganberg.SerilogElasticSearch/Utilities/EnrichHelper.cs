@@ -14,6 +14,7 @@ namespace Siganberg.SerilogElasticSearch.Utilities
             {
                 httpContext.Request.EnableBuffering();
                 diagnosticContext.Set("RequestBody", ReadRequestBody(httpContext.Request.Body, httpContext.Request.ContentLength));
+                diagnosticContext.Set("Path", httpContext.Request.Path);
                 diagnosticContext.Set("QueryString", httpContext.Request.QueryString);
                 diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request.Headers));
             };

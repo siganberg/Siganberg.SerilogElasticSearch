@@ -18,14 +18,13 @@ namespace Siganberg.SerilogElasticSearch.Formatter
         {
             {"SourceContext", "callsite"},
             {"RequestMethod", "method"},
-            {"RequestPath", "path"},
+            {"Path", "path"},
+            {"QueryString", "queryString"},
             {"StatusCode", "responseStatus"},
             {"Elapsed", "durationMs"},
-            {"QueryString", "queryString"},
             {"RequestHeaders", "requestHeaders"},
             {"RequestBody", "requestBody"},
-            {"ResponseBody", "responseBody"},
-
+            {"ResponseBody", "responseBody"}
         };
 
         public void Format(LogEvent logEvent, TextWriter output)
@@ -71,13 +70,13 @@ namespace Siganberg.SerilogElasticSearch.Formatter
             if (logEvent.MessageTemplate == null) return;
             var message = logEvent.MessageTemplate.Text;
             var matchVariables = Regex.Matches(logEvent.MessageTemplate.Text, "{.*?}")
-                .Select(a => a.Value.Replace("{", "").Replace("}", ""))
+                .Select(a => new { Key =   a.Value.Replace("{", "").Replace("}", "")?.Split(":").FirstOrDefault(), Expression = a.Value })
                 .ToList();
 
             foreach (var variable in matchVariables)
             {
-                if (logEvent.Properties.ContainsKey(variable))
-                    message = message.Replace("{" + variable + "}", logEvent.Properties[variable].ToString().Replace("\"", ""));
+                if (logEvent.Properties.ContainsKey(variable.Key))
+                    message = message.Replace(variable.Expression, logEvent.Properties[variable.Key].ToString().Replace("\"", ""));
             }
 
             output.Write($", \"message\" : \"{message}\"");

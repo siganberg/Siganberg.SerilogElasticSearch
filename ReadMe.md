@@ -1,6 +1,13 @@
-## Usage
+## Installtion 
 
-Add `UseSerilog` on your Program.cs
+**First**, install the Siganberg.SerilogElasticSearch NuGet package into your app.
+
+```
+dotnet add package Siganberg.SerilogElasticSearch --version 1.0.1
+```
+
+**Next**, in your application's _Program.cs_ file, configure Serilog.  
+
 
 ```c#
 public class Program
@@ -49,7 +56,7 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 }
 ```
 
-*Sample appsettings.json*
+**Then**, add `appsettings.json` configuration.
 
 ```json
 {
