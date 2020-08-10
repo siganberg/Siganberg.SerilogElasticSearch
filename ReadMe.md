@@ -109,3 +109,31 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 |     IncludeResponseBody                | false   | When true, it will add middleware to capture and add response body to the RequestLogging. This add overhead and should only use for troubleshooting if necessary.  |                                                                                                                                               |
 
 
+## Controlling RequestLogging dynamically 
+
+You can dynamically control too when to inject request logging by implementing `IRequestLoggingOptions` interface and register it using dependency injection. 
+
+*Note: This is only applicable for normal request flow. When ERROR occured, request logging are always injected since the goal of this logger is to get as much as information when something goes wrong.*
+
+```c#
+public class RequestLoggingOptions : IRequestLoggingOptions
+{
+    private readonly List<string> _excludedPaths = new List<string>
+    {
+        "healthz",
+        "swagger"
+    };
+
+    public bool IncludeRequestWhen(HttpContext context)
+    {
+        var path = context.Request.Path.ToString();
+        if (_excludedPaths.Any(a => path.Contains(a)))
+            return false;
+
+        //-- TODO: Add more logic here.  
+        //-- example: Evaluate LaunchDarkly flag to turn ON/OFF RequestLogging based on some flag.
+
+        return true;
+    }    
+}
+  ```
