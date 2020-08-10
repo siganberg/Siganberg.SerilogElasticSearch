@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@ namespace Siganberg.SerilogElasticSearch.SampleApp.Controllers
         public Task<JsonResult> Index()
         {
             _logger.LogInformation("Test Logging....");
+            throw new Exception("Some random exception.");
             return Task.FromResult(new JsonResult(new { Status = "Success"}));
         }
     }

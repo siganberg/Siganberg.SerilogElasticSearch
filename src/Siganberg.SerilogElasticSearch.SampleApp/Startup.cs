@@ -17,14 +17,13 @@ namespace Siganberg.SerilogElasticSearch.SampleApp
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseRequestLogging();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseRequestLogging();
             app.UseMvc();
-
         }
     }
 

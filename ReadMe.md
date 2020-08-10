@@ -1,6 +1,57 @@
-### Sample appsettings.json
+## Usage
 
+Add `UseSerilog` on your Program.cs
+
+```c#
+public class Program
+{
+    public static void Main()
+    {
+        var builder = CreateWebHostBuilder(null);
+        var host = builder.Build();
+            host.Run();
+    }
+
+    private static IWebHostBuilder CreateWebHostBuilder(string[] args)
+    {
+        var builder = WebHost.CreateDefaultBuilder(args);
+        builder.UseStartup<Startup>()
+            .SuppressStatusMessages(true)
+            .ConfigureAppConfiguration(ConfigureConfiguration)
+            .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
+
+        return builder;
+    }
+
+    private static void ConfigureConfiguration(WebHostBuilderContext hostingContext, IConfigurationBuilder config)
+    {
+        var env = hostingContext.HostingEnvironment;
+        config.SetBasePath(env.ContentRootPath)
+            .AddJsonFile("appsettings.json", false, true)
+            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
+            .AddEnvironmentVariables();
+    }
+}
 ```
+
+On `Startup.cs`, add  `app.UseRequestLogging()` as the first line or before any middelware on the Configure method. 
+
+```c#
+public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+{
+    app.UseRequestLogging();
+
+    if (env.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+    }
+    app.UseMvc();
+}
+```
+
+*Sample appsettings.json*
+
+```json
 {
     "Serilog": {
     "MinimumLevel": {
@@ -22,9 +73,9 @@
     "Enrich": [
       "FromLogContext"
     ]
-  }
-  RequestLoggingOptions : {
-      IncludeResponseBody : "false"
+  },
+  "RequestLoggingOptions" : {
+      "IncludeResponseBody" : "false"
   }
 }
 ```
@@ -33,9 +84,9 @@
 
 *Use `System.Net.Http.HttpClient.Default.LogicalHandler` to override HttpClient downstream call logs*. 
 
-*To use simple formatting on development machine (human readable logs), you can override the WriteTo nodes for example create appsettings.Development json white value like this*
+*To use simple formatting on development machine (human readable logs), you can override the WriteTo nodes for example create appsettings.Development json with value similar to this*
 
-```
+```json
 {
     "Serilog": {
         "WriteTo": {
@@ -48,10 +99,13 @@
 }
 ```
 
-`RequestLoggingOptions` configuration
+### Configuration
+
+
+*RequestLoggingOptions*
 
 | Property | Default | Descriptions                                                                                                                                       |
 |---------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-|     IncludeResponseBody                | false   | When true, add middleware to capture and add response body to the RequestLogging. This add overhead and only use for troubleshooting if necessary  |                                                                                                                                               |
+|     IncludeResponseBody                | false   | When true, it will add middleware to capture and add response body to the RequestLogging. This add overhead and should only use for troubleshooting if necessary.  |                                                                                                                                               |
 
 
