@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Siganberg.SirilogElasticSearch.Middleware
+namespace Siganberg.SerilogElasticSearch.Middleware
 {
     [ExcludeFromCodeCoverage]
     internal class CorrelationIdMiddleWare

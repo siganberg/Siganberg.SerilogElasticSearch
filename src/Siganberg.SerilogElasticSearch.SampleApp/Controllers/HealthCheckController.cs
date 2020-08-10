@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Siganberg.SirilogElasticSearch.SampleApp.Controllers
+namespace Siganberg.SerilogElasticSearch.SampleApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

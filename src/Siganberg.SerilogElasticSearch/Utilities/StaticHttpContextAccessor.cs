@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace Siganberg.SirilogElasticSearch.Utilities
+namespace Siganberg.SerilogElasticSearch.Utilities
 {
     public static class StaticHttpContextAccessor
     {

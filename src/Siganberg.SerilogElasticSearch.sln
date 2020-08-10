@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SirilogElasticSearch", "Siganberg.SirilogElasticSearch\Siganberg.SirilogElasticSearch.csproj", "{C96D337C-1323-481D-A458-B46CBE3D9929}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SerilogElasticSearch", "Siganberg.SerilogElasticSearch\Siganberg.SerilogElasticSearch.csproj", "{C96D337C-1323-481D-A458-B46CBE3D9929}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SirilogElasticSearch.SampleApp", "Siganberg.SirilogElasticSearch.SampleApp\Siganberg.SirilogElasticSearch.SampleApp.csproj", "{80CA3E9A-2C82-43ED-9244-FE87F3BC688E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SerilogElasticSearch.SampleApp", "Siganberg.SerilogElasticSearch.SampleApp\Siganberg.SerilogElasticSearch.SampleApp.csproj", "{80CA3E9A-2C82-43ED-9244-FE87F3BC688E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace Siganberg.SirilogElasticSearch.SampleApp.Controllers
+namespace Siganberg.SerilogElasticSearch.SampleApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -16,10 +16,10 @@ namespace Siganberg.SirilogElasticSearch.SampleApp.Controllers
         }
 
         [HttpGet]
-        public Task<AcceptedResult> Index()
+        public Task<JsonResult> Index()
         {
             _logger.LogInformation("Test Logging....");
-            return Task.FromResult(new AcceptedResult());
+            return Task.FromResult(new JsonResult(new { Status = "Success"}));
         }
     }
 }

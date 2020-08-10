@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Siganberg.SirilogElasticSearch.Extensions;
+using Siganberg.SerilogElasticSearch.Extensions;
 
-namespace Siganberg.SirilogElasticSearch.SampleApp
+namespace Siganberg.SerilogElasticSearch.SampleApp
 {
     public class Startup
     {
@@ -11,7 +11,7 @@ namespace Siganberg.SirilogElasticSearch.SampleApp
         {
 
             services.AddHttpContextAccessor();
-            services.AddSingleton<IRequestLoggingRules, RequestLoggingRules>();
+            services.AddSingleton<IRequestLoggingOptions, RequestLoggingOptions>();
             services.AddMvc();
         }
 
@@ -24,6 +24,7 @@ namespace Siganberg.SirilogElasticSearch.SampleApp
 
             app.UseRequestLogging();
             app.UseMvc();
+
         }
     }
 

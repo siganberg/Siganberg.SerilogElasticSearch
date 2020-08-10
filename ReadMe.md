@@ -15,13 +15,16 @@
       "Kibana-Sink": {
         "Name": "Console",
         "Args": {
-          "formatter": "Siganberg.SirilogElasticSearch.Formatter.KibanaFormatter, Siganberg.SirilogElasticSearch"
+          "formatter": "Siganberg.SerilogElasticSearch.Formatter.KibanaFormatter, Siganberg.SerilogElasticSearch"
         }
       }
     },
     "Enrich": [
       "FromLogContext"
     ]
+  }
+  RequestLoggingOptions : {
+      IncludeResponseBody : "false"
   }
 }
 ```
@@ -44,4 +47,11 @@
     }
 }
 ```
+
+`RequestLoggingOptions` configuration
+
+| Property | Default | Descriptions                                                                                                                                       |
+|---------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+|     IncludeResponseBody                | false   | When true, add middleware to capture and add response body to the RequestLogging. This add overhead and only use for troubleshooting if necessary  |                                                                                                                                               |
+
 

@@ -2,12 +2,14 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
-        <PackageId>Siganberg.SirilogElasticSearch</PackageId>
-        <Version>1.0.3</Version>
+        <PackageId>Siganberg.SerilogElasticSearch</PackageId>
+        <Version>1.0.0</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageProjectUrl>https://github.com/francischie/Siganberg.SirilogElasticSearch</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/francischie/Siganberg.SerilogElasticSearch</PackageProjectUrl>
+        <AssemblyName>Siganberg.SerilogElasticSearch</AssemblyName>
+        <RootNamespace>Siganberg.SerilogElasticSearch</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +18,6 @@
         <PackageReference Include="Serilog.AspNetCore" Version="3.2.0" />
     </ItemGroup>
 
-    
+
 
 </Project>

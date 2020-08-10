@@ -7,9 +7,9 @@ using System.Net;
 using System.Text.RegularExpressions;
 using Serilog.Events;
 using Serilog.Formatting;
-using Siganberg.SirilogElasticSearch.Utilities;
+using Siganberg.SerilogElasticSearch.Utilities;
 
-namespace Siganberg.SirilogElasticSearch.Formatter
+namespace Siganberg.SerilogElasticSearch.Formatter
 {
     [ExcludeFromCodeCoverage]
     public class ElasticSearchFormatter : ITextFormatter
@@ -24,6 +24,8 @@ namespace Siganberg.SirilogElasticSearch.Formatter
             {"QueryString", "queryString"},
             {"RequestHeaders", "requestHeaders"},
             {"RequestBody", "requestBody"},
+            {"ResponseBody", "responseBody"},
+
         };
 
         public void Format(LogEvent logEvent, TextWriter output)

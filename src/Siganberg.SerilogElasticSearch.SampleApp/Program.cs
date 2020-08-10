@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
-namespace Siganberg.SirilogElasticSearch.SampleApp
+namespace Siganberg.SerilogElasticSearch.SampleApp
 {
     public class Program
     {

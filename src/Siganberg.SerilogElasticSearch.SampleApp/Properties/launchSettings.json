@@ -1,7 +1,7 @@
 {
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "Siganberg.SirilogElasticSearch.SampleApp": {
+    "Siganberg.SerilogElasticSearch.SampleApp": {
       "commandName": "Project",
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5002",
