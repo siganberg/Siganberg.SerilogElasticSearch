@@ -14,9 +14,9 @@ namespace Siganberg.SerilogElasticSearch.Extensions
     {
         public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder, Func<HttpContext, bool> func = null)
         {
-            var context = builder.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
-            var requestLoggingRules = builder.ApplicationServices.GetRequiredService<IRequestLoggingOptions>();
-            var config = builder.ApplicationServices.GetRequiredService<IConfiguration>();
+            var context = builder.ApplicationServices.GetService<IHttpContextAccessor>();
+            var requestLoggingRules = builder.ApplicationServices.GetService<IRequestLoggingOptions>();
+            var config = builder.ApplicationServices.GetService<IConfiguration>();
 
             StaticHttpContextAccessor.Configure(context);
 
