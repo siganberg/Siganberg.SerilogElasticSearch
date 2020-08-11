@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using Remotion.Linq.Utilities;
 using Serilog.Events;
 using Serilog.Formatting;
 using Siganberg.SerilogElasticSearch.Utilities;
@@ -59,10 +60,20 @@ namespace Siganberg.SerilogElasticSearch.Formatter
                     case "responseStatus":
                         value = AutoCorrectResponseStatus(p);
                         break;
+                    case "responseBody":
+                        value = CleanBody(p);
+                        break;
                 }
 
                 output.Write($", \"{keyName}\" : {value}");
             }
+        }
+
+        private object CleanBody(LogEventPropertyValue value)
+        {
+            var result = value.ToString();
+            result = result.Replace(@"\\""", "'");
+            return result;
         }
 
         private static void WriteMessage(LogEvent logEvent, TextWriter output)
@@ -70,7 +81,7 @@ namespace Siganberg.SerilogElasticSearch.Formatter
             if (logEvent.MessageTemplate == null) return;
             var message = logEvent.MessageTemplate.Text;
             var matchVariables = Regex.Matches(logEvent.MessageTemplate.Text, "{.*?}")
-                .Select(a => new { Key =   a.Value.Replace("{", "").Replace("}", "")?.Split(":").FirstOrDefault(), Expression = a.Value })
+                .Select(a => new {Key = a.Value.Replace("{", "").Replace("}", "")?.Split(":").FirstOrDefault(), Expression = a.Value})
                 .ToList();
 
             foreach (var variable in matchVariables)
@@ -120,7 +131,5 @@ namespace Siganberg.SerilogElasticSearch.Formatter
             if (name.Length == 1) return name.ToLower();
             return name.Substring(0, 1).ToLower() + name.Substring(1);
         }
-
-
     }
 }

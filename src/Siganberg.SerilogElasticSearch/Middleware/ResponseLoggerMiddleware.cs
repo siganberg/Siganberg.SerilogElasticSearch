@@ -34,7 +34,7 @@ namespace Siganberg.SerilogElasticSearch.Middleware
             response.Body.Seek(0, SeekOrigin.Begin);
             string responseBody = await new StreamReader(response.Body).ReadToEndAsync();
             response.Body.Seek(0, SeekOrigin.Begin);
-            return $"{responseBody}";
+            return responseBody;
         }
     }
 }
