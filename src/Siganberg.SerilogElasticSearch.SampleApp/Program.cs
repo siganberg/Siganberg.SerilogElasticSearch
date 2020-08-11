@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Siganberg.SerilogElasticSearch.Formatter;
 
 namespace Siganberg.SerilogElasticSearch.SampleApp
 {
@@ -39,7 +40,14 @@ namespace Siganberg.SerilogElasticSearch.SampleApp
             builder.UseStartup<Startup>()
                 .SuppressStatusMessages(true)
                 .ConfigureAppConfiguration(ConfigureConfiguration)
-                .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
+                .UseSerilog((hostingContext, loggerConfiguration) =>
+                {
+                    loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
+                    //if (hostingContext.HostingEnvironment.IsDevelopment())
+                    //    loggerConfiguration.WriteTo.Console();
+                    //else
+                        loggerConfiguration.WriteTo.Console(new ElasticSearchFormatter());
+                });
 
             return builder;
         }
