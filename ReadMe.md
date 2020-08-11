@@ -3,7 +3,7 @@
 **First**, install the Siganberg.SerilogElasticSearch NuGet package into your app.
 
 ```
-dotnet add package Siganberg.SerilogElasticSearch --version 1.0.1
+dotnet add package Siganberg.SerilogElasticSearch --version 1.0.5
 ```
 
 **Next**, in your application's _Program.cs_ file, configure Serilog.  
@@ -25,7 +25,14 @@ public class Program
         builder.UseStartup<Startup>()
             .SuppressStatusMessages(true)
             .ConfigureAppConfiguration(ConfigureConfiguration)
-            .UseSerilog((hostingContext, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration));
+            .UseSerilog((hostingContext, loggerConfiguration) =>
+            {
+                loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
+                if (hostingContext.HostingEnvironment.IsDevelopment())
+                    loggerConfiguration.WriteTo.Console();
+                else
+                    loggerConfiguration.WriteTo.Console(new ElasticSearchFormatter());
+            });
 
         return builder;
     }
@@ -69,14 +76,6 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         "System.Net.Http.HttpClient.Default.LogicalHandler": "Information"
       }
     },
-    "WriteTo": {
-      "Kibana-Sink": {
-        "Name": "Console",
-        "Args": {
-          "formatter": "Siganberg.SerilogElasticSearch.Formatter.KibanaFormatter, Siganberg.SerilogElasticSearch"
-        }
-      }
-    },
     "Enrich": [
       "FromLogContext"
     ]
@@ -90,21 +89,6 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 ### Notes: 
 
 *Use `System.Net.Http.HttpClient.Default.LogicalHandler` to override HttpClient downstream call logs*. 
-
-*To use simple formatting on development machine (human readable logs), you can override the WriteTo nodes for example create appsettings.Development json with value similar to this*
-
-```json
-{
-    "Serilog": {
-        "WriteTo": {
-            "Kibana-Sink": "",
-            "Console-Sink" : {
-                "Name": "Console"
-            }
-        }
-    }
-}
-```
 
 ### Configuration
 
