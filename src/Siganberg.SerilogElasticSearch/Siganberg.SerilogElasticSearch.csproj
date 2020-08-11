@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <PackageId>Siganberg.SerilogElasticSearch</PackageId>
-        <Version>1.0.3</Version>
+        <Version>1.0.4</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -11,7 +11,7 @@
         <AssemblyName>Siganberg.SerilogElasticSearch</AssemblyName>
         <RootNamespace>Siganberg.SerilogElasticSearch</RootNamespace>
         <PackageReleaseNotes>
-            - Added responseBody sanitizer that affect kibana parser.
+            - Fixed issue with new line character in message.
         </PackageReleaseNotes>
     </PropertyGroup>
 

@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-using Remotion.Linq.Utilities;
 using Serilog.Events;
 using Serilog.Formatting;
 using Siganberg.SerilogElasticSearch.Utilities;
@@ -33,7 +32,7 @@ namespace Siganberg.SerilogElasticSearch.Formatter
             output.Write("{");
 
             output.Write($"\"time\" : \"{DateTime.Now}\"");
-            output.Write($",\"level\" : \"{logEvent.Level.ToString().ToUpper().Replace("INFORMATION", "INFO")}\"");
+            output.Write($", \"level\" : \"{logEvent.Level.ToString().ToUpper().Replace("INFORMATION", "INFO")}\"");
             WriteCorrelationId(logEvent, output);
 
             if (logEvent.Exception == null)
@@ -61,7 +60,7 @@ namespace Siganberg.SerilogElasticSearch.Formatter
                         value = AutoCorrectResponseStatus(p);
                         break;
                     case "responseBody":
-                        value = CleanBody(p);
+                        value = CleanContent(p.ToString());
                         break;
                 }
 
@@ -69,19 +68,20 @@ namespace Siganberg.SerilogElasticSearch.Formatter
             }
         }
 
-        private object CleanBody(LogEventPropertyValue value)
+        private object CleanContent(string value)
         {
-            var result = value.ToString();
-            result = result.Replace(@"\\""", "'");
+            var result = value
+                .Replace(@"\\""", "'");
+            result = Regex.Replace(result, @"\r\n?|\n", "\\n");
             return result;
         }
 
-        private static void WriteMessage(LogEvent logEvent, TextWriter output)
+        private void WriteMessage(LogEvent logEvent, TextWriter output)
         {
             if (logEvent.MessageTemplate == null) return;
             var message = logEvent.MessageTemplate.Text;
             var matchVariables = Regex.Matches(logEvent.MessageTemplate.Text, "{.*?}")
-                .Select(a => new {Key = a.Value.Replace("{", "").Replace("}", "")?.Split(":").FirstOrDefault(), Expression = a.Value})
+                .Select(a => new {Key = a.Value.Replace("{", "").Replace("}", "").Split(":").FirstOrDefault(), Expression = a.Value})
                 .ToList();
 
             foreach (var variable in matchVariables)
@@ -90,10 +90,10 @@ namespace Siganberg.SerilogElasticSearch.Formatter
                     message = message.Replace(variable.Expression, logEvent.Properties[variable.Key].ToString().Replace("\"", ""));
             }
 
-            output.Write($", \"message\" : \"{message}\"");
+            output.Write($", \"message\" : \"{CleanContent(message)}\"");
         }
 
-        private static void WriteCorrelationId(LogEvent logEvent, TextWriter output)
+        private  void WriteCorrelationId(LogEvent logEvent, TextWriter output)
         {
             logEvent.Properties.TryGetValue("correlationId", out var correlationValue);
             var correlationId = correlationValue?.ToString();
@@ -107,11 +107,15 @@ namespace Siganberg.SerilogElasticSearch.Formatter
 
         private void WriteExceptionIfNonRequestLogging(LogEvent logEvent, TextWriter output)
         {
-            output.Write($", \"message\" : \"{logEvent.Exception.Message}\"");
+            var shortMessage = Regex.Replace(logEvent.Exception.Message, @"\r\n?|\n", "\\n")
+                .Split("\\n")
+                .FirstOrDefault();
+            output.Write($", \"message\" : \"{shortMessage}\"");
+
             if (!logEvent.Properties.ContainsKey("StatusCode"))
             {
-                output.Write($", \"exception\" : \"");
-                output.Write(logEvent.Exception.ToString().Replace(Environment.NewLine, "\\n"));
+                output.Write(", \"exception\" : \"");
+                output.Write(CleanContent(logEvent.Exception.ToString()));
                 output.Write("\"");
             }
         }
