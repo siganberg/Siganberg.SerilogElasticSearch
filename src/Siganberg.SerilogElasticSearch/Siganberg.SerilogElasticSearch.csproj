@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <PackageId>Siganberg.SerilogElasticSearch</PackageId>
-        <Version>1.0.2</Version>
+        <Version>1.0.3</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -11,8 +11,7 @@
         <AssemblyName>Siganberg.SerilogElasticSearch</AssemblyName>
         <RootNamespace>Siganberg.SerilogElasticSearch</RootNamespace>
         <PackageReleaseNotes>
-            - Fixed messsage template formatting
-            - Fixed path value. Old path contains QueryString.
+            - Added responseBody sanitizer that affect kibana parser.
         </PackageReleaseNotes>
     </PropertyGroup>
 
