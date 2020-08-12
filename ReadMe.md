@@ -98,11 +98,11 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 | Property | Default | Descriptions                                                                                                                                       |
 |---------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------|
 |     IncludeResponseBody                | false   | When true, it will add middleware to capture and add response body to the RequestLogging. This add overhead and should only use for troubleshooting if necessary.  |                                                                                                                                               |
-
-
+|     IncludeRequestHeaders                | true   | Include Request Headers.  |
+|     ExcludeHeaderNames                | empty   | Array of string of header names. Ignored if **IncludeRequestHeaders** is set to **false**. Header name will still be log but value is set to *\<OMITTED\>*  |
 ## Controlling RequestLogging dynamically 
 
-You can dynamically control too when to inject request logging by implementing `IRequestLoggingOptions` interface and register it using dependency injection. 
+You can also dynamically control when to inject request logging by implementing `IRequestLoggingOptions` and register it using dependency injection. 
 
 *Note: This is only applicable for normal request flow. When ERROR occured, request logging are always injected since the goal of this logger is to get as much as information when something goes wrong.*
 
