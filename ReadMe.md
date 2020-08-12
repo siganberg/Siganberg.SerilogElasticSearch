@@ -63,6 +63,18 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 }
 ```
 
+And for `ConfigureService` method. 
+
+```c#
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddRequestLogging()
+        //-- Optional RequestLoggingOptions 
+        .AddSingleton<IRequestLoggingOptions, CreateYourRequestLoggingOptionsClass>()
+        .AddMvc();
+}
+```
+
 **Then**, add `appsettings.json` configuration.
 
 ```json
