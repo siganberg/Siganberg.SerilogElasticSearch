@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using Serilog.Events;
 using Serilog.Formatting;
 using Siganberg.SerilogElasticSearch.Utilities;
@@ -70,10 +71,7 @@ namespace Siganberg.SerilogElasticSearch.Formatter
 
         private object CleanContent(string value)
         {
-            var result = value
-                .Replace(@"\\""", "'");
-            result = Regex.Replace(result, @"\r\n?|\n", "\\n");
-            return result;
+            return JsonConvert.ToString(value);
         }
 
         private void WriteMessage(LogEvent logEvent, TextWriter output)
@@ -90,7 +88,7 @@ namespace Siganberg.SerilogElasticSearch.Formatter
                     message = message.Replace(variable.Expression, logEvent.Properties[variable.Key].ToString().Replace("\"", ""));
             }
 
-            output.Write($", \"message\" : \"{CleanContent(message)}\"");
+            output.Write($", \"message\" : {CleanContent(message)}");
         }
 
         private  void WriteCorrelationId(LogEvent logEvent, TextWriter output)
@@ -107,17 +105,14 @@ namespace Siganberg.SerilogElasticSearch.Formatter
 
         private void WriteExceptionIfNonRequestLogging(LogEvent logEvent, TextWriter output)
         {
-            var shortMessage = Regex.Replace(logEvent.Exception.Message, @"\r\n?|\n", "\\n")
-                .Split("\\n")
-                .FirstOrDefault();
-            output.Write($", \"message\" : \"{shortMessage}\"");
+            var length = logEvent.Exception.Message.Length;
+            var shortMessage =  logEvent.Exception.Message.Substring(0, Math.Min(length, 500));
+            if (length > 500) shortMessage += " ...";
+
+            output.Write($", \"message\" : {CleanContent(shortMessage)} ");
 
             if (!logEvent.Properties.ContainsKey("StatusCode"))
-            {
-                output.Write(", \"exception\" : \"");
-                output.Write(CleanContent(logEvent.Exception.ToString()));
-                output.Write("\"");
-            }
+                output.Write($", \"exception\" : {CleanContent(logEvent.Exception.ToString())}");
         }
 
         private object AutoCorrectResponseStatus(LogEventPropertyValue value)
