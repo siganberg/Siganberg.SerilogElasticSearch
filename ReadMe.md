@@ -1,3 +1,6 @@
+# SerilogElasticSearch ![Nuget](https://img.shields.io/nuget/v/Siganberg.SerilogElasticSearch) ![Nuget](https://img.shields.io/nuget/dt/Siganberg.SerilogElasticSearch)
+
+
 ## Installtion 
 
 **First**, install the Siganberg.SerilogElasticSearch NuGet package into your app.
