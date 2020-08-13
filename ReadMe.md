@@ -93,7 +93,10 @@ public void ConfigureServices(IServiceCollection services)
     ]
   },
   "RequestLoggingOptions" : {
-      "IncludeResponseBody" : "false"
+      "IncludeResponseBody" : "false",
+      "ExcludeHeaderNames" :[
+        "Authorizations"
+      ]
   }
 }
 ```
