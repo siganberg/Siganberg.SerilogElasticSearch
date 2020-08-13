@@ -5,8 +5,8 @@
 
 **First**, install the Siganberg.SerilogElasticSearch NuGet package into your app.
 
-```
-dotnet add package Siganberg.SerilogElasticSearch --version 1.0.7
+```console
+dotnet add package Siganberg.SerilogElasticSearch
 ```
 
 **Next**, in your application's _Program.cs_ file, configure Serilog.  
