@@ -1,4 +1,4 @@
-# SerilogElasticSearch ![Nuget](https://img.shields.io/nuget/v/Siganberg.SerilogElasticSearch) ![Nuget](https://img.shields.io/nuget/dt/Siganberg.SerilogElasticSearch)
+# SerilogElasticSearch ![Nuget](https://img.shields.io/nuget/v/Siganberg.SerilogElasticSearch)](https://www.nuget.org/packages/Siganberg.SerilogElasticSearch/) ![Nuget](https://img.shields.io/nuget/dt/Siganberg.SerilogElasticSearch)](https://www.nuget.org/packages/Siganberg.SerilogElasticSearch/)
 
 
 ## Installtion 
