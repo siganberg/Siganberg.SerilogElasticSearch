@@ -1,9 +1,12 @@
+# SerilogElasticSearch [![Nuget](https://img.shields.io/nuget/v/Siganberg.SerilogElasticSearch)](https://www.nuget.org/packages/Siganberg.SerilogElasticSearch/) [![Nuget](https://img.shields.io/nuget/dt/Siganberg.SerilogElasticSearch)](https://www.nuget.org/packages/Siganberg.SerilogElasticSearch/)
+
+
 ## Installtion 
 
 **First**, install the Siganberg.SerilogElasticSearch NuGet package into your app.
 
-```
-dotnet add package Siganberg.SerilogElasticSearch --version 1.0.5
+```console
+dotnet add package Siganberg.SerilogElasticSearch
 ```
 
 **Next**, in your application's _Program.cs_ file, configure Serilog.  
@@ -93,7 +96,10 @@ public void ConfigureServices(IServiceCollection services)
     ]
   },
   "RequestLoggingOptions" : {
-      "IncludeResponseBody" : "false"
+      "IncludeResponseBody" : "false",
+      "ExcludeHeaderNames" :[
+        "Authorizations"
+      ]
   }
 }
 ```
