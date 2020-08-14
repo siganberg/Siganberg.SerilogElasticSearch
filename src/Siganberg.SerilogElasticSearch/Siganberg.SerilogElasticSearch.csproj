@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <PackageId>Siganberg.SerilogElasticSearch</PackageId>
-        <Version>1.0.7</Version>
+        <Version>1.0.8</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -11,7 +11,7 @@
         <AssemblyName>Siganberg.SerilogElasticSearch</AssemblyName>
         <RootNamespace>Siganberg.SerilogElasticSearch</RootNamespace>
         <PackageReleaseNotes>
-            - Added option to include/exclude request headers. Both selective or as whole.
+            - Escape requestBody to make sure it doesn't break json logs.
         </PackageReleaseNotes>
     </PropertyGroup>
 

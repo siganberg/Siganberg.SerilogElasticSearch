@@ -60,11 +60,11 @@ namespace Siganberg.SerilogElasticSearch.Formatter
                     case "responseStatus":
                         value = AutoCorrectResponseStatus(p);
                         break;
+                    case "requestBody":
                     case "responseBody":
                         value = CleanContent(p.ToString());
                         break;
                 }
-
                 output.Write($", \"{keyName}\" : {value}");
             }
         }
