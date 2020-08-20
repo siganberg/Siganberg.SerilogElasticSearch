@@ -16,7 +16,7 @@ namespace Siganberg.SerilogElasticSearch.Handlers
 
       protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
       {
-         request.Headers.Add("x-request-id", _httpContextAccessor.HttpContext.TraceIdentifier);
+         request.Headers.Add("x-request-id", _httpContextAccessor.HttpContext?.TraceIdentifier);
          return base.SendAsync(request, cancellationToken);
       }
    }
