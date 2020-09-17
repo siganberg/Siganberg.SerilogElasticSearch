@@ -39,7 +39,7 @@ namespace Siganberg.SerilogElasticSearch.Utilities
         {
             var exclusion = config.GetSection("Serilog:RequestLoggingOptions:ExcludeHeaderNames")
                 ?.Get<string[]>()
-                .Select(a => a.ToLower())
+                ?.Select(a => a.ToLower())
                 .ToList();
 
             if (exclusion == null || exclusion.Count == 0)
