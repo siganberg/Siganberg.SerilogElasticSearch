@@ -30,7 +30,7 @@ namespace Siganberg.SerilogElasticSearch.Utilities
             if (length == null || length == 0) return string.Empty;
             stream.Seek(0, SeekOrigin.Begin);
             var buffer = new byte[length.Value];
-            stream.Read(buffer, 0, buffer.Length);
+            stream.ReadAsync(buffer, 0, buffer.Length);
             stream.Seek(0, SeekOrigin.Begin);
             return  Encoding.UTF8.GetString(buffer);
         }
