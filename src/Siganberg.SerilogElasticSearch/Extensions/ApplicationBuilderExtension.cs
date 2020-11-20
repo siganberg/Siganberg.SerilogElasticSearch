@@ -14,14 +14,21 @@ namespace Siganberg.SerilogElasticSearch.Extensions
     {
         public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder, Func<HttpContext, bool> func = null)
         {
+            builder.Use((con, next) =>
+            {
+                con.Request.EnableBuffering();
+                return next();
+            });
+
             var context = builder.ApplicationServices.GetService<IHttpContextAccessor>();
             var requestLoggingRules = builder.ApplicationServices.GetService<IRequestLoggingOptions>();
             var config = builder.ApplicationServices.GetService<IConfiguration>();
 
             StaticHttpContextAccessor.Configure(context);
 
+
             builder.UseMiddleware<CorrelationIdMiddleWare>()
-                .UseSerilogRequestLogging(options =>
+                .UseSerilogRequestLogging( options =>
                 {
                     options.GetLevel = (ctx, _, ex) => EvaluateExclusionRules(ctx, ex, func, requestLoggingRules);
                     EnrichHelper.AddDiagnosticContext(options, config);

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Serilog.AspNetCore;
@@ -12,10 +12,9 @@ namespace Siganberg.SerilogElasticSearch.Utilities
     {
         internal static void AddDiagnosticContext(RequestLoggingOptions options, IConfiguration config)
         {
-            options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+            options.EnrichDiagnosticContext = async (diagnosticContext, httpContext) =>
             {
-                httpContext.Request.EnableBuffering();
-                diagnosticContext.Set("RequestBody", ReadRequestBody(httpContext.Request.Body, httpContext.Request.ContentLength));
+                diagnosticContext.Set("RequestBody", await ReadRequestBody(httpContext.Request));
                 diagnosticContext.Set("Path", httpContext.Request.Path);
                 diagnosticContext.Set("QueryString", httpContext.Request.QueryString);
 
@@ -25,14 +24,13 @@ namespace Siganberg.SerilogElasticSearch.Utilities
             };
         }
 
-        private static string ReadRequestBody(Stream stream, long? length)
+        private static async Task<string> ReadRequestBody(HttpRequest request)
         {
-            if (length == null || length == 0) return string.Empty;
-            stream.Seek(0, SeekOrigin.Begin);
-            var buffer = new byte[length.Value];
-            stream.ReadAsync(buffer, 0, buffer.Length);
-            stream.Seek(0, SeekOrigin.Begin);
-            return  Encoding.UTF8.GetString(buffer);
+            if (request.Body == null) return string.Empty;
+            request.Body.Seek(0, SeekOrigin.Begin);
+            var reader = new StreamReader(request.Body);
+            var bodyAsText = await reader.ReadToEndAsync();
+            return bodyAsText;
         }
 
         private static string FormatHeader(IHeaderDictionary requestHeaders, IConfiguration config)
@@ -49,11 +47,9 @@ namespace Siganberg.SerilogElasticSearch.Utilities
             {
                 a.Key,
                 Value = exclusion.Contains(a.Key.ToLower()) ? "<OMITTED>" : a.Value.ToString()
-            }).ToDictionary(a => a.Key, a=> a.Value);
+            }).ToDictionary(a => a.Key, a => a.Value);
 
             return String.Join("\\n", result);
         }
-
-
     }
 }
