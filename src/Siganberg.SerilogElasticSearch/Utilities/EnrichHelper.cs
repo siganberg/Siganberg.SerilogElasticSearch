@@ -14,19 +14,20 @@ namespace Siganberg.SerilogElasticSearch.Utilities
         {
             options.EnrichDiagnosticContext = async (diagnosticContext, httpContext) =>
             {
+                if (httpContext == null) return; 
                 diagnosticContext.Set("RequestBody", await ReadRequestBody(httpContext.Request));
-                diagnosticContext.Set("Path", httpContext.Request.Path);
-                diagnosticContext.Set("QueryString", httpContext.Request.QueryString);
+                diagnosticContext.Set("Path", httpContext.Request?.Path ?? "");
+                diagnosticContext.Set("QueryString", httpContext.Request?.QueryString);
 
                 var includeRequestHeaders = config["Serilog:RequestLoggingOptions:IncludeRequestHeaders"];
                 if (string.IsNullOrWhiteSpace(includeRequestHeaders) || includeRequestHeaders.ToLower() == "true")
-                    diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request.Headers, config));
+                    diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request?.Headers, config));
             };
         }
 
         private static async Task<string> ReadRequestBody(HttpRequest request)
         {
-            if (request.Body == null) return string.Empty;
+            if (request == null) return string.Empty;
             request.Body.Seek(0, SeekOrigin.Begin);
             var reader = new StreamReader(request.Body);
             var bodyAsText = await reader.ReadToEndAsync();
@@ -35,6 +36,8 @@ namespace Siganberg.SerilogElasticSearch.Utilities
 
         private static string FormatHeader(IHeaderDictionary requestHeaders, IConfiguration config)
         {
+            if (requestHeaders == null) return string.Empty; 
+            
             var exclusion = config.GetSection("Serilog:RequestLoggingOptions:ExcludeHeaderNames")
                 ?.Get<string[]>()
                 ?.Select(a => a.ToLower())

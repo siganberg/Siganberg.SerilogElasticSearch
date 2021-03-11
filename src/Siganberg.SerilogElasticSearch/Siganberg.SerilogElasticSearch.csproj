@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <PackageId>Siganberg.SerilogElasticSearch</PackageId>
-        <Version>1.0.12</Version>
+        <Version>1.0.14</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -11,7 +11,7 @@
         <AssemblyName>Siganberg.SerilogElasticSearch</AssemblyName>
         <RootNamespace>Siganberg.SerilogElasticSearch</RootNamespace>
         <PackageReleaseNotes>
-            - Fixed bugs on POST requestBody not logging.
+            - Added checking for HttpContext to fix issue with :  "Unhandled exception. System.ObjectDisposedException: IFeatureCollection has been disposed."
         </PackageReleaseNotes>
     </PropertyGroup>
 
