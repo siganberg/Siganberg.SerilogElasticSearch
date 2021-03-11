@@ -14,14 +14,22 @@ namespace Siganberg.SerilogElasticSearch.Utilities
         {
             options.EnrichDiagnosticContext = async (diagnosticContext, httpContext) =>
             {
-                if (httpContext == null) return; 
-                diagnosticContext.Set("RequestBody", await ReadRequestBody(httpContext.Request));
-                diagnosticContext.Set("Path", httpContext.Request?.Path ?? "");
-                diagnosticContext.Set("QueryString", httpContext.Request?.QueryString);
+                try
+                {
+                    if (httpContext == null) return; 
+                    diagnosticContext.Set("RequestBody", await ReadRequestBody(httpContext.Request));
+                    diagnosticContext.Set("Path", httpContext.Request?.Path ?? "");
+                    diagnosticContext.Set("QueryString", httpContext.Request?.QueryString);
 
-                var includeRequestHeaders = config["Serilog:RequestLoggingOptions:IncludeRequestHeaders"];
-                if (string.IsNullOrWhiteSpace(includeRequestHeaders) || includeRequestHeaders.ToLower() == "true")
-                    diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request?.Headers, config));
+                    var includeRequestHeaders = config["Serilog:RequestLoggingOptions:IncludeRequestHeaders"];
+                    if (string.IsNullOrWhiteSpace(includeRequestHeaders) || includeRequestHeaders.ToLower() == "true")
+                        diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request?.Headers, config));
+                }
+                catch (ObjectDisposedException)
+                {
+                   //-- This exception cause pod to reset in Kubernetes. For now will eat the exception to avoid issue. 
+                }
+              
             };
         }
 
