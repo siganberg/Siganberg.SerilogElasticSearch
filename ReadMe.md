@@ -71,7 +71,7 @@ And for `ConfigureService` method.
 ```c#
 public void ConfigureServices(IServiceCollection services)
 {
-    services.AddRequestLogging()
+    services.
         //-- Optional RequestLoggingOptions 
         .AddSingleton<IRequestLoggingOptions, CreateYourRequestLoggingOptionsClass>()
         .AddMvc();
@@ -84,12 +84,7 @@ public void ConfigureServices(IServiceCollection services)
 {
     "Serilog": {
     "MinimumLevel": {
-      "Default": "Information",
-      "Override": {
-        "Microsoft": "Warning",
-        "System": "Warning",
-        "System.Net.Http.HttpClient.Default.LogicalHandler": "Information"
-      }
+      "Default": "Information"
     },
     "Enrich": [
       "FromLogContext"
