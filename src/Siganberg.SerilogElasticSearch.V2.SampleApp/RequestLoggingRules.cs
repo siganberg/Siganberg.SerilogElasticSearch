@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 
-namespace Siganberg.SerilogElasticSearch.SampleApp
+namespace Siganberg.SerilogElasticSearch.V2.SampleApp
 {
     public class RequestLoggingOptions : IRequestLoggingOptions
     {
@@ -10,7 +10,6 @@ namespace Siganberg.SerilogElasticSearch.SampleApp
         {
             "healthz",
             "swagger"
-
         };
 
         public bool IncludeRequestWhen(HttpContext context)

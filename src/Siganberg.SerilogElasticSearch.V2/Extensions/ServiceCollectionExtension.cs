@@ -1,14 +1,16 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Siganberg.SerilogElasticSearch.Handlers;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Siganberg.SerilogElasticSearch.V2.Handlers;
 
-namespace Siganberg.SerilogElasticSearch.Extensions
+namespace Siganberg.SerilogElasticSearch.V2.Extensions
 {
     public static class ServiceCollectionExtension
     {
         public static IServiceCollection AddRequestLogging(this IServiceCollection services)
         {
-            services.AddHttpContextAccessor()
-                .AddTransient<RequestIdMessageHandler>();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<RequestIdMessageHandler>();
 
             services
                 .AddHttpClient("", client => { })

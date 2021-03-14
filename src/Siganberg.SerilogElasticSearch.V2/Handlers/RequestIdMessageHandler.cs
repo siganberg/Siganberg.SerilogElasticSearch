@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Siganberg.SerilogElasticSearch.Handlers
+namespace Siganberg.SerilogElasticSearch.V2.Handlers
 {
    public class RequestIdMessageHandler : DelegatingHandler
    {

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 
-namespace Siganberg.SerilogElasticSearch.Middleware
+namespace Siganberg.SerilogElasticSearch.V2.Middleware
 {
     public class ResponseLoggerMiddleware
     {

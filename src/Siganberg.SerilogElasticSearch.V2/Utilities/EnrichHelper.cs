@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Serilog.AspNetCore;
 
-namespace Siganberg.SerilogElasticSearch.Utilities
+namespace Siganberg.SerilogElasticSearch.V2.Utilities
 {
     internal static class EnrichHelper
     {
