@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-namespace Siganberg.SerilogElasticSearch.V2.SampleApp
+namespace Siganberg.SerilogElasticSearch.SampleApp
 {
     public static class Program
     {

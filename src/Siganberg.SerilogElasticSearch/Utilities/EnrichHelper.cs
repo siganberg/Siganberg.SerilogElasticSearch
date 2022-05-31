@@ -4,41 +4,44 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using Serilog.AspNetCore;
 
-namespace Siganberg.SerilogElasticSearch.V2.Utilities
+namespace Siganberg.SerilogElasticSearch.Utilities
 {
     internal static class EnrichHelper
     {
         internal static void AddDiagnosticContext(RequestLoggingOptions options, IConfiguration config)
         {
-            options.EnrichDiagnosticContext = async (diagnosticContext, httpContext) =>
+            async void OptionsEnrichDiagnosticContext(IDiagnosticContext diagnosticContext, HttpContext httpContext)
             {
+                if (httpContext?.Request == null) return;
                 try
                 {
-                    if (httpContext == null) return; 
                     diagnosticContext.Set("RequestBody", await ReadRequestBody(httpContext.Request));
-                    diagnosticContext.Set("Path", httpContext.Request?.Path ?? "");
-                    diagnosticContext.Set("QueryString", httpContext.Request?.QueryString);
-
+                    diagnosticContext.Set("Path", httpContext.Request.Path);
+                    diagnosticContext.Set("QueryString", httpContext.Request.QueryString);
                     var includeRequestHeaders = config["Serilog:RequestLoggingOptions:IncludeRequestHeaders"];
-                    if (string.IsNullOrWhiteSpace(includeRequestHeaders) || includeRequestHeaders.ToLower() == "true")
-                        diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request?.Headers, config));
-                }
-                catch (ObjectDisposedException)
+                    if (string.IsNullOrWhiteSpace(includeRequestHeaders) || includeRequestHeaders.ToLower() == "true") diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request.Headers, config));
+                } 
+                catch (Exception e)
                 {
-                   //-- This exception cause pod to reset in Kubernetes. For now will eat the exception to avoid issue. 
+                    var factory = httpContext.RequestServices.GetRequiredService<ILoggerFactory>();
+                    var logger = factory.CreateLogger("");
+                    logger.LogError(e, string.Empty);
                 }
-              
-            };
+            }
+            options.EnrichDiagnosticContext = OptionsEnrichDiagnosticContext;
         }
 
         private static async Task<string> ReadRequestBody(HttpRequest request)
         {
-            if (request == null) return string.Empty;
             request.Body.Seek(0, SeekOrigin.Begin);
-            var reader = new StreamReader(request.Body);
+            using var reader = new StreamReader(request.Body, leaveOpen:true);
             var bodyAsText = await reader.ReadToEndAsync();
+            request.Body.Seek(0, SeekOrigin.Begin);
             return bodyAsText;
         }
 

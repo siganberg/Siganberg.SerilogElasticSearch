@@ -5,10 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
-using Siganberg.SerilogElasticSearch.V2.Middleware;
-using Siganberg.SerilogElasticSearch.V2.Utilities;
+using Siganberg.SerilogElasticSearch.Middleware;
+using Siganberg.SerilogElasticSearch.Utilities;
 
-namespace Siganberg.SerilogElasticSearch.V2.Extensions
+namespace Siganberg.SerilogElasticSearch.Extensions
 {
     public static class ApplicationBuilderExtension
     {

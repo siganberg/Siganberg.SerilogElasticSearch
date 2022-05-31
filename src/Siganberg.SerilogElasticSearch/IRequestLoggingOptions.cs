@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace Siganberg.SerilogElasticSearch.V2
+namespace Siganberg.SerilogElasticSearch
 {
     public interface IRequestLoggingOptions
     {

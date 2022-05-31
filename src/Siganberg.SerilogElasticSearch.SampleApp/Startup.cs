@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Siganberg.SerilogElasticSearch.V2.Extensions;
+using Siganberg.SerilogElasticSearch.Extensions;
 
-namespace Siganberg.SerilogElasticSearch.V2.SampleApp
+namespace Siganberg.SerilogElasticSearch.SampleApp
 {
     public class Startup
     {

@@ -9,7 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Siganberg.SerilogElasticSearch.V2\Siganberg.SerilogElasticSearch.V2.csproj" />
+        <ProjectReference Include="..\Siganberg.SerilogElasticSearch\Siganberg.SerilogElasticSearch.csproj" />
     </ItemGroup>
 
 </Project>

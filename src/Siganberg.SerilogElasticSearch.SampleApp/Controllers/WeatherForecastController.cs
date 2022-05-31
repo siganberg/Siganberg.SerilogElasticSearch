@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Siganberg.SerilogElasticSearch.V2.SampleApp.Models;
+using Siganberg.SerilogElasticSearch.SampleApp.Models;
 
-namespace Siganberg.SerilogElasticSearch.V2.SampleApp.Controllers
+namespace Siganberg.SerilogElasticSearch.SampleApp.Controllers
 {
     [ApiController]
     [Route("[controller]")]

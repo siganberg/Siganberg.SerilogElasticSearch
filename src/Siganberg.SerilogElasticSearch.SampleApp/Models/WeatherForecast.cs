@@ -1,6 +1,6 @@
 using System;
 
-namespace Siganberg.SerilogElasticSearch.V2.SampleApp.Models
+namespace Siganberg.SerilogElasticSearch.SampleApp.Models
 {
     public class WeatherForecast
     {

@@ -1,8 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SerilogElasticSearch.V2", "Siganberg.SerilogElasticSearch.V2\Siganberg.SerilogElasticSearch.V2.csproj", "{C96D337C-1323-481D-A458-B46CBE3D9929}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SerilogElasticSearch", "Siganberg.SerilogElasticSearch\Siganberg.SerilogElasticSearch.csproj", "{C96D337C-1323-481D-A458-B46CBE3D9929}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SerilogElasticSearch.V2.SampleApp", "Siganberg.SerilogElasticSearch.V2.SampleApp\Siganberg.SerilogElasticSearch.V2.SampleApp.csproj", "{2459CC28-5900-477E-8AE3-6C3ACDBBF687}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SerilogElasticSearch.SampleApp", "Siganberg.SerilogElasticSearch.SampleApp\Siganberg.SerilogElasticSearch.SampleApp.csproj", "{2459CC28-5900-477E-8AE3-6C3ACDBBF687}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C02016E6-1653-4721-A195-2610373DEA3B}"
+	ProjectSection(SolutionItems) = preProject
+		publish.sh = publish.sh
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

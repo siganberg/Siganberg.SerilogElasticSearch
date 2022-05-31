@@ -8,9 +8,9 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Serilog.Events;
 using Serilog.Formatting;
-using Siganberg.SerilogElasticSearch.V2.Utilities;
+using Siganberg.SerilogElasticSearch.Utilities;
 
-namespace Siganberg.SerilogElasticSearch.V2.Formatter
+namespace Siganberg.SerilogElasticSearch.Formatter
 {
     [ExcludeFromCodeCoverage]
     public class ElasticSearchFormatter : ITextFormatter

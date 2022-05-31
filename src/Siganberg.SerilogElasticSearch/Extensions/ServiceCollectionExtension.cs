@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Siganberg.SerilogElasticSearch.V2.Handlers;
+using Siganberg.SerilogElasticSearch.Handlers;
 
-namespace Siganberg.SerilogElasticSearch.V2.Extensions
+namespace Siganberg.SerilogElasticSearch.Extensions
 {
     public static class ServiceCollectionExtension
     {

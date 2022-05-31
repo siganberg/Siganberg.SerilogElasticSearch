@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 
-namespace Siganberg.SerilogElasticSearch.V2.SampleApp
+namespace Siganberg.SerilogElasticSearch.SampleApp
 {
     public class RequestLoggingOptions : IRequestLoggingOptions
     {
