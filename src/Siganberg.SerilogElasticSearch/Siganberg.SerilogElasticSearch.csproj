@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <PackageId>Siganberg.SerilogElasticSearch</PackageId>
-        <Version>2.0.1</Version>
+        <Version>2.0.3</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

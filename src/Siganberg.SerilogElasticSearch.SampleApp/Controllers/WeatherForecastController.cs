@@ -41,5 +41,12 @@ namespace Siganberg.SerilogElasticSearch.SampleApp.Controllers
         {
             return Ok();
         }
+        
+        [HttpPut]
+        public ActionResult Patch(WeatherForecast weatherForecast)
+        {
+            throw new ArgumentException("Fake exception.");
+
+        }
     }
 }
