@@ -14,7 +14,7 @@ namespace Siganberg.SerilogElasticSearch.SampleApp
         {
 
             services.AddControllers();
-            
+            services.AddSingleton<IRequestLoggingOptions, RequestLoggingOptions>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TestApi", Version = "v1" });
