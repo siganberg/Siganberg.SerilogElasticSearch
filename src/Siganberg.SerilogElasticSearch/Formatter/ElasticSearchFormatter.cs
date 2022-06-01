@@ -15,7 +15,7 @@ namespace Siganberg.SerilogElasticSearch.Formatter
     [ExcludeFromCodeCoverage]
     public class ElasticSearchFormatter : ITextFormatter
     {
-        private readonly Dictionary<string, string> _mappings = new Dictionary<string, string>
+        private readonly Dictionary<string, string> _mappings = new()
         {
             {"SourceContext", "callsite"},
             {"RequestMethod", "method"},
@@ -25,7 +25,9 @@ namespace Siganberg.SerilogElasticSearch.Formatter
             {"Elapsed", "durationMs"},
             {"RequestHeaders", "requestHeaders"},
             {"RequestBody", "requestBody"},
-            {"ResponseBody", "responseBody"}
+            {"ResponseBody", "responseBody"},
+            {"ContentType", "contentType"},
+            {"ContentLength", "contentLength"}
         };
 
         public void Format(LogEvent logEvent, TextWriter output)
