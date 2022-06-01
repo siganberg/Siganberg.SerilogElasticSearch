@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
 using Serilog.AspNetCore;
 
@@ -13,6 +14,9 @@ namespace Siganberg.SerilogElasticSearch.Utilities
         {
             options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
             {
+                var syncIoFeature = httpContext.Features.Get<IHttpBodyControlFeature>();
+                if (syncIoFeature != null)
+                    syncIoFeature.AllowSynchronousIO = true;
                 if (httpContext?.Request == null) return;
                 diagnosticContext.Set("Path", httpContext.Request.Path);
                 diagnosticContext.Set("QueryString", httpContext.Request.QueryString);
