@@ -35,5 +35,11 @@ namespace Siganberg.SerilogElasticSearch.SampleApp.Controllers
             })
             .ToArray();
         }
+        
+        [HttpPost]
+        public ActionResult Get(WeatherForecast weatherForecast)
+        {
+            return Ok();
+        }
     }
 }

@@ -1,10 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Serilog;
 using Serilog.AspNetCore;
 
 namespace Siganberg.SerilogElasticSearch.Utilities
@@ -13,7 +11,7 @@ namespace Siganberg.SerilogElasticSearch.Utilities
     {
         internal static void AddDiagnosticContext(RequestLoggingOptions options, IConfiguration config)
         {
-            async void OptionsEnrichDiagnosticContext(IDiagnosticContext diagnosticContext, HttpContext httpContext)
+            options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
             {
                 if (httpContext?.Request == null) return;
                 diagnosticContext.Set("Path", httpContext.Request.Path);
@@ -23,26 +21,22 @@ namespace Siganberg.SerilogElasticSearch.Utilities
                     diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request.Headers, config));
                 diagnosticContext.Set("ContentType", httpContext.Request.ContentType);
                 diagnosticContext.Set("ContentLength", httpContext.Request.ContentLength);
-                diagnosticContext.Set("RequestBody", await ReadRequestBody(httpContext.Request));
-            }
-            options.EnrichDiagnosticContext = OptionsEnrichDiagnosticContext;
+                diagnosticContext.Set("RequestBody",  ReadRequestBody(httpContext.Request));
+            };
         }
 
-        private static async Task<string> ReadRequestBody(HttpRequest request)
+        private static string ReadRequestBody(HttpRequest request)
         {
-            // Exit early if the caller claims there's no body content (e.g. a GET request).
-            // As of .NET 5, checking the actual Body.Length is sporadically unreliable.
             if (request.ContentLength == 0) return null;
-
             try
             {
                 request.Body.Seek(0, SeekOrigin.Begin);
                 using var reader = new StreamReader(request.Body, leaveOpen: true);
-                var bodyAsText = await reader.ReadToEndAsync();
+                var bodyAsText = reader.ReadToEnd();
                 request.Body.Seek(0, SeekOrigin.Begin);
                 return bodyAsText;
             }
-            catch // This could happen if Body is actually empty.
+            catch 
             {
                 return null;
             }
