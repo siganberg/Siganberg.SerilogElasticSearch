@@ -30,7 +30,7 @@ namespace Siganberg.SerilogElasticSearch.Middleware
         private async Task<string> ReadResponseBody(HttpResponse response)
         {
             response.Body.Seek(0, SeekOrigin.Begin);
-            using var stream = new StreamReader(response.Body);
+            using var stream = new StreamReader(response.Body, leaveOpen:true);
             var responseBody = await stream.ReadToEndAsync();
             response.Body.Seek(0, SeekOrigin.Begin);
             return responseBody;

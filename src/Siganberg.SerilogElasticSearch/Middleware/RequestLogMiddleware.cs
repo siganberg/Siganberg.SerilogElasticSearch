@@ -37,8 +37,8 @@ namespace Siganberg.SerilogElasticSearch.Middleware
                 _diagnosticContext.Set("ContentType", httpContext.Request.ContentType);
                 _diagnosticContext.Set("ContentLength", httpContext.Request.ContentLength);
                 _diagnosticContext.Set("RequestBody", body);
-                await _next(httpContext);
             }
+            await _next(httpContext);
         }
 
         private static async Task<string> ReadRequestBody(HttpRequest request)

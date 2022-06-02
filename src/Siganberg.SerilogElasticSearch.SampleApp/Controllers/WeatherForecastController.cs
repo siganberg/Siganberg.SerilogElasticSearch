@@ -39,7 +39,7 @@ namespace Siganberg.SerilogElasticSearch.SampleApp.Controllers
         [HttpPost]
         public ActionResult Get(WeatherForecast weatherForecast)
         {
-            return Ok();
+            return Ok(new WeatherForecast());
         }
         
         [HttpPut]
