@@ -43,20 +43,12 @@ namespace Siganberg.SerilogElasticSearch.Middleware
 
         private static async Task<string> ReadRequestBody(HttpRequest request)
         {
-            if (request.ContentLength == 0) return null;
-            try
-            {
-                if (!request.Body.CanSeek) return null; 
-                request.Body.Seek(0, SeekOrigin.Begin);
-                using var reader = new StreamReader(request.Body);
-                var bodyAsText = await reader.ReadToEndAsync();
-                request.Body.Seek(0, SeekOrigin.Begin);
-                return bodyAsText;
-            }
-            catch
-            {
-                return null;
-            }
+            request.Body.Seek(0, SeekOrigin.Begin);
+            using var reader = new StreamReader(request.Body, leaveOpen:true);
+            var bodyAsText = await reader.ReadToEndAsync();
+            request.Body.Seek(0, SeekOrigin.Begin);
+            return bodyAsText;
+          
         }
         private static string FormatHeader(IHeaderDictionary requestHeaders, IConfiguration config)
         {

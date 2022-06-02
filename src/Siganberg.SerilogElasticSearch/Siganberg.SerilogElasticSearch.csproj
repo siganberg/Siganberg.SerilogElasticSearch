@@ -3,14 +3,14 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <PackageId>Siganberg.SerilogElasticSearch</PackageId>
-        <Version>2.0.5</Version>
+        <Version>2.0.6</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageProjectUrl>https://github.com/francischie/Siganberg.SerilogElasticSearch</PackageProjectUrl>
         <PackageReleaseNotes>
-            - Remove async void for EnrichDiagnosticContext.
-            - Enabled AllowSynchronousIO per request basis only (not server level). 
+            - Removed EnrichHelper and replaced with middleware with proper async tasks. 
+            - Removed no longer needed try-catch and let the exception bubble up for proper handling. 
         </PackageReleaseNotes>
     </PropertyGroup>
 
@@ -18,7 +18,6 @@
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-
     </ItemGroup>
 
 
