@@ -27,17 +27,17 @@ namespace Siganberg.SerilogElasticSearch.Extensions
             
             StaticHttpContextAccessor.Configure(context);
 
-
             builder.UseMiddleware<CorrelationIdMiddleWare>()
                 .UseSerilogRequestLogging( options =>
                 {
                     options.GetLevel = (ctx, _, ex) => EvaluateExclusionRules(ctx, ex, func, requestLoggingRules);
-                    EnrichHelper.AddDiagnosticContext(options, config);
                 });
 
             if (config["Serilog:RequestLoggingOptions:IncludeResponseBody"]?.ToLower() == "true")
                 builder.UseMiddleware<ResponseLoggerMiddleware>();
 
+            builder.UseMiddleware<RequestLogMiddleware>();
+            
             return builder;
         }
 

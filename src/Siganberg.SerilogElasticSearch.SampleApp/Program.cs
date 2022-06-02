@@ -16,13 +16,11 @@ namespace Siganberg.SerilogElasticSearch.SampleApp
             Host.CreateDefaultBuilder(args)
                 .UseSerilog((hostingContext, loggerConfiguration) =>
                 {
-                    //loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
-                    //loggerConfiguration.WriteTo.Console();
-                    loggerConfiguration.WriteTo.Console(new ElasticSearchFormatter());
+                    loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
                     // if (hostingContext.HostingEnvironment.IsDevelopment())
                     //     loggerConfiguration.WriteTo.Console();
                     // else
-                    //     loggerConfiguration.WriteTo.Console(new ElasticSearchFormatter());
+                         loggerConfiguration.WriteTo.Console(new ElasticSearchFormatter());
                 }).ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }
 }

@@ -16,25 +16,25 @@ namespace Siganberg.SerilogElasticSearch.Middleware
             _diagnosticContext = diagnosticContext;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
-            var originalBodyStream = context.Response.Body;
-            using (var responseBody = new MemoryStream())
-            {
-                context.Response.Body = responseBody;
-                await _next(context);
-                var responseBodyPayload = await ReadResponseBody(context.Response);
-                _diagnosticContext.Set("ResponseBody", responseBodyPayload);
-                await responseBody.CopyToAsync(originalBodyStream);
-            }
+            var originalBodyStream = httpContext.Response.Body;
+            await using var responseBody = new MemoryStream();
+            httpContext.Response.Body = responseBody;
+            await _next(httpContext);   
+            var responseBodyPayload = await ReadResponseBody(httpContext.Response);
+            _diagnosticContext.Set("ResponseBody", responseBodyPayload);
+            await responseBody.CopyToAsync(originalBodyStream);
         }
 
         private async Task<string> ReadResponseBody(HttpResponse response)
         {
             response.Body.Seek(0, SeekOrigin.Begin);
-            string responseBody = await new StreamReader(response.Body).ReadToEndAsync();
+            using var stream = new StreamReader(response.Body);
+            var responseBody = await stream.ReadToEndAsync();
             response.Body.Seek(0, SeekOrigin.Begin);
             return responseBody;
         }
+       
     }
 }
