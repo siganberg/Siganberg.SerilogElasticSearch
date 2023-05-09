@@ -19,8 +19,11 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
-          
-      - name: Build, Test and Pack 
+
+      - name: Build
+        run: dotnet build -c Release
+              
+      - name: Create package
         run: dotnet pack -c Release -o out
         
       - name: Nuget Publish
