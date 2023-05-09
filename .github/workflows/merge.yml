@@ -1,0 +1,28 @@
+name: dotnet package
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['6.0' ]
+
+    steps:
+      - uses: actions/checkout@v3
+        
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+          
+      - name: Build, Test and Pack 
+        run: dotnet pack -c Release -o out
+        
+      - name: Nuget Publish
+        run: dotnet nuget push ./out/*.nupkg --skip-duplicate --no-symbols -k ${{ secrets.NUGET_API_KEY }} -s "https://api.nuget.org/v3/index.json"
+  
