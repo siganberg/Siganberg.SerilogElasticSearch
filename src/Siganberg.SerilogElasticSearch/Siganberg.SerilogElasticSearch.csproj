@@ -1,23 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <PackageId>Siganberg.SerilogElasticSearch</PackageId>
-        <Version>2.0.7</Version>
+        <Version>2.0.8</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageProjectUrl>https://github.com/francischie/Siganberg.SerilogElasticSearch</PackageProjectUrl>
+        <PackageProjectUrl>https://github.com/siganberg/Siganberg.SerilogElasticSearch</PackageProjectUrl>
         <PackageReleaseNotes>
-            - Removed EnrichHelper and replaced with middleware with proper async tasks. 
-            - Removed no longer needed try-catch and let the exception bubble up for proper handling. 
+            - Upgraded to net6.0
         </PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
 
