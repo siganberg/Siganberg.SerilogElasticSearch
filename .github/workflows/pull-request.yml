@@ -10,7 +10,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
-      checks: write
+      checks: write 
       
     runs-on: [self-hosted]
     #runs-on: ubuntu-latest
