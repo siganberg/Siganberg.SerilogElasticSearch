@@ -15,12 +15,14 @@ namespace Siganberg.SerilogElasticSearch.Extensions
         public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder, Func<HttpContext, bool> func = null)
         {
             var context = builder.ApplicationServices.GetService<IHttpContextAccessor>();
-            var requestLoggingRules = builder.ApplicationServices.GetService<IRequestLoggingOptions>();
+            var requestLoggingInterceptor = builder.ApplicationServices.GetService<IRequestLoggingInterceptor>() 
+                                      ?? ActivatorUtilities.CreateInstance<DefaultRequestLoggingInterceptor>(builder.ApplicationServices);
+
             var config = builder.ApplicationServices.GetRequiredService<IConfiguration>();
             
             builder.Use((con, next) =>
             {
-                if (requestLoggingRules?.IncludeRequestWhen(con) ??  true)
+                if (requestLoggingInterceptor?.IncludeRequestWhen(con) ??  true)
                     con.Request.EnableBuffering();
                 return next();
             });
@@ -30,10 +32,10 @@ namespace Siganberg.SerilogElasticSearch.Extensions
             builder.UseMiddleware<CorrelationIdMiddleWare>()
                 .UseSerilogRequestLogging( options =>
                 {
-                    options.GetLevel = (ctx, _, ex) => EvaluateExclusionRules(ctx, ex, func, requestLoggingRules);
+                    options.GetLevel = (ctx, _, ex) => EvaluateExclusionRules(ctx, ex, func, requestLoggingInterceptor);
                 });
 
-            if (config["Serilog:RequestLoggingOptions:IncludeResponseBody"]?.ToLower() == "true")
+            if (config["Serilog:RequestLoggingInterceptor:IncludeResponseBody"]?.ToLower() == "true")
                 builder.UseMiddleware<ResponseLoggerMiddleware>();
 
             builder.UseMiddleware<RequestLogMiddleware>();
@@ -42,7 +44,7 @@ namespace Siganberg.SerilogElasticSearch.Extensions
         }
 
 
-        private static LogEventLevel EvaluateExclusionRules(HttpContext ctx, Exception ex, Func<HttpContext, bool> func = null, IRequestLoggingOptions options = null)
+        private static LogEventLevel EvaluateExclusionRules(HttpContext ctx, Exception ex, Func<HttpContext, bool> func = null, IRequestLoggingInterceptor interceptor = null)
         {
             if (ex != null) return LogEventLevel.Error;
 
@@ -52,8 +54,8 @@ namespace Siganberg.SerilogElasticSearch.Extensions
 
             if (func != null)
                 result = func.Invoke(ctx);
-            else if (options != null)
-                result = options.IncludeRequestWhen(ctx);
+            else if (interceptor != null)
+                result = interceptor.IncludeRequestWhen(ctx);
 
             if (result == false) return LogEventLevel.Verbose;
 

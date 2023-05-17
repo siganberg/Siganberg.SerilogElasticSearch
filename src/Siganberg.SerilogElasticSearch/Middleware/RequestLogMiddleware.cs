@@ -25,13 +25,15 @@ namespace Siganberg.SerilogElasticSearch.Middleware
 
         public async Task InvokeAsync(HttpContext httpContext)
         {
-            var requestLoggingOptions = httpContext.RequestServices.GetService<IRequestLoggingOptions>();   
-            if (requestLoggingOptions?.IncludeRequestWhen(httpContext) ?? true)
+            var requestLoggingInterceptor = httpContext.RequestServices.GetService<IRequestLoggingInterceptor>() 
+                                        ?? ActivatorUtilities.CreateInstance<DefaultRequestLoggingInterceptor>(httpContext.RequestServices);
+
+            if (requestLoggingInterceptor?.IncludeRequestWhen(httpContext) ?? true)
             {
                 var body = await ReadRequestBody(httpContext.Request);
                 _diagnosticContext.Set("Path", httpContext.Request.Path);
                 _diagnosticContext.Set("QueryString", httpContext.Request.QueryString);
-                var includeRequestHeaders = _configuration["Serilog:RequestLoggingOptions:IncludeRequestHeaders"];
+                var includeRequestHeaders = _configuration["Serilog:RequestLoggingInterceptor:IncludeRequestHeaders"];
                 if (string.Equals(includeRequestHeaders, "true", StringComparison.OrdinalIgnoreCase))
                     _diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request.Headers, _configuration));
                 _diagnosticContext.Set("ContentType", httpContext.Request.ContentType);
@@ -54,7 +56,7 @@ namespace Siganberg.SerilogElasticSearch.Middleware
         {
             if (requestHeaders == null) return string.Empty;
 
-            var exclusion = config.GetSection("Serilog:RequestLoggingOptions:ExcludeHeaderNames")
+            var exclusion = config.GetSection("Serilog:RequestLoggingInterceptor:ExcludeHeaderNames")
                 ?.Get<string[]>()
                 ?.Select(a => a.ToLower())
                 .ToList();

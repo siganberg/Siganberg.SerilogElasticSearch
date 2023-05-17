@@ -3,13 +3,14 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <PackageId>Siganberg.SerilogElasticSearch</PackageId>
-        <Version>2.0.8</Version>
+        <Version>2.0.9</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageProjectUrl>https://github.com/siganberg/Siganberg.SerilogElasticSearch</PackageProjectUrl>
         <PackageReleaseNotes>
-            - Upgraded to net6.0
+            - Renamed IRequestLoggingOptions to IRequestLoggingInterceptor (breaking change)
+            - Added DefaultRequestLoggingInterceptor
         </PackageReleaseNotes>
     </PropertyGroup>
 
