@@ -12,8 +12,8 @@ jobs:
       contents: read
       checks: write 
       
-    runs-on: [self-hosted]
-    #runs-on: ubuntu-latest
+    #runs-on: [self-hosted]
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
