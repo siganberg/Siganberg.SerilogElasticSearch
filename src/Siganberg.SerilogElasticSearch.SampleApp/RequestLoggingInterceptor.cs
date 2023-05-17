@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Siganberg.SerilogElasticSearch.SampleApp
 {
-    public class RequestLoggingOptions : IRequestLoggingOptions
+    public class RequestLoggingInterceptor : IRequestLoggingInterceptor
     {
         private readonly List<string> _excludedPaths = new List<string>
         {
@@ -14,10 +14,12 @@ namespace Siganberg.SerilogElasticSearch.SampleApp
 
         public bool IncludeRequestWhen(HttpContext context)
         {
-            var path = context.Request.Path.ToString();
+            var path = context.Request.Path.ToString().ToLower();
             if (_excludedPaths.Any(a => path.Contains(a)))
                 return false;
-            return true;
+        
+            // TODO: You can add more logic here to determine if request logging will be included. 
+            return true; 
         }
 
     }
