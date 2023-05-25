@@ -6,6 +6,8 @@ namespace Siganberg.SerilogElasticSearch;
 
 public class DefaultRequestLoggingInterceptor : IRequestLoggingInterceptor
 {
+    public static DefaultRequestLoggingInterceptor Instance = new DefaultRequestLoggingInterceptor();
+    
     private readonly List<string> _excludedPaths = new List<string>
     {
         "health",

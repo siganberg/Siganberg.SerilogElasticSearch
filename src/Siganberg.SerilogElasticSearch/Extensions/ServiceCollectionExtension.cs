@@ -11,9 +11,7 @@ namespace Siganberg.SerilogElasticSearch.Extensions
         {
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<RequestIdMessageHandler>();
-
-            services
-                .AddHttpClient("", _ => { })
+            services.AddHttpClient("", _ => { })
                 .AddHttpMessageHandler<RequestIdMessageHandler>();
 
             return services;

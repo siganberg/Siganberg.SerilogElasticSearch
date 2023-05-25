@@ -14,7 +14,7 @@ namespace Siganberg.SerilogElasticSearch.SampleApp
 
             services.AddControllers();
             //-- Register custom IRequestLoggingInterceptor. This will override DefaultRequestLoggingInterceptor behavior. 
-            services.AddSingleton<IRequestLoggingInterceptor, RequestLoggingInterceptor>();
+            //services.AddSingleton<IRequestLoggingInterceptor, RequestLoggingInterceptor>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TestApi", Version = "v1" });

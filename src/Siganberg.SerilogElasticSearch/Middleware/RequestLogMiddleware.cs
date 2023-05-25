@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Siganberg.SerilogElasticSearch.Settings;
 
 namespace Siganberg.SerilogElasticSearch.Middleware
 {
@@ -13,29 +13,29 @@ namespace Siganberg.SerilogElasticSearch.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly IDiagnosticContext _diagnosticContext;
-        private readonly IConfiguration _configuration;
-
+        private readonly SerilogSettings _settings;
 
         public RequestLogMiddleware(RequestDelegate next, IDiagnosticContext diagnosticContext, IConfiguration configuration)
         {
             _next = next;
             _diagnosticContext = diagnosticContext;
-            _configuration = configuration;
+            _settings = configuration.GetSection(SerilogSettings.KeyName).Get<SerilogSettings>();
+
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
         {
             var requestLoggingInterceptor = httpContext.RequestServices.GetService<IRequestLoggingInterceptor>() 
-                                        ?? ActivatorUtilities.CreateInstance<DefaultRequestLoggingInterceptor>(httpContext.RequestServices);
+                                        ?? DefaultRequestLoggingInterceptor.Instance;
 
             if (requestLoggingInterceptor?.IncludeRequestWhen(httpContext) ?? true)
             {
                 var body = await ReadRequestBody(httpContext.Request);
                 _diagnosticContext.Set("Path", httpContext.Request.Path);
                 _diagnosticContext.Set("QueryString", httpContext.Request.QueryString);
-                var includeRequestHeaders = _configuration["Serilog:RequestLoggingInterceptor:IncludeRequestHeaders"];
-                if (string.Equals(includeRequestHeaders, "true", StringComparison.OrdinalIgnoreCase))
-                    _diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request.Headers, _configuration));
+                var includeRequestHeaders = _settings.RequestLoggingOptions.IncludeRequestHeaders;
+                if (includeRequestHeaders)
+                    _diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request.Headers));
                 _diagnosticContext.Set("ContentType", httpContext.Request.ContentType);
                 _diagnosticContext.Set("ContentLength", httpContext.Request.ContentLength);
                 _diagnosticContext.Set("RequestBody", body);
@@ -52,14 +52,11 @@ namespace Siganberg.SerilogElasticSearch.Middleware
             return bodyAsText;
           
         }
-        private static string FormatHeader(IHeaderDictionary requestHeaders, IConfiguration config)
+        private  string FormatHeader(IHeaderDictionary requestHeaders)
         {
             if (requestHeaders == null) return string.Empty;
 
-            var exclusion = config.GetSection("Serilog:RequestLoggingInterceptor:ExcludeHeaderNames")
-                ?.Get<string[]>()
-                ?.Select(a => a.ToLower())
-                .ToList();
+            var exclusion = _settings.RequestLoggingOptions.ExcludeHeaderNames;
 
             if (exclusion == null || exclusion.Count == 0)
                 return string.Join("\\n", requestHeaders);

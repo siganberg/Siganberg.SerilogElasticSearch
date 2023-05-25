@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using Siganberg.SerilogElasticSearch.Middleware;
+using Siganberg.SerilogElasticSearch.Settings;
 using Siganberg.SerilogElasticSearch.Utilities;
 
 namespace Siganberg.SerilogElasticSearch.Extensions
@@ -16,9 +17,10 @@ namespace Siganberg.SerilogElasticSearch.Extensions
         {
             var context = builder.ApplicationServices.GetService<IHttpContextAccessor>();
             var requestLoggingInterceptor = builder.ApplicationServices.GetService<IRequestLoggingInterceptor>() 
-                                      ?? ActivatorUtilities.CreateInstance<DefaultRequestLoggingInterceptor>(builder.ApplicationServices);
-
-            var config = builder.ApplicationServices.GetRequiredService<IConfiguration>();
+                                      ?? DefaultRequestLoggingInterceptor.Instance;
+            
+            var configuration = builder.ApplicationServices.GetRequiredService<IConfiguration>();
+            var settings = configuration.GetSection(SerilogSettings.KeyName).Get<SerilogSettings>();
             
             builder.Use((con, next) =>
             {
@@ -35,7 +37,7 @@ namespace Siganberg.SerilogElasticSearch.Extensions
                     options.GetLevel = (ctx, _, ex) => EvaluateExclusionRules(ctx, ex, func, requestLoggingInterceptor);
                 });
 
-            if (config["Serilog:RequestLoggingInterceptor:IncludeResponseBody"]?.ToLower() == "true")
+            if (settings.RequestLoggingOptions.IncludeResponseBody)
                 builder.UseMiddleware<ResponseLoggerMiddleware>();
 
             builder.UseMiddleware<RequestLogMiddleware>();
