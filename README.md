@@ -1,6 +1,18 @@
 # SerilogElasticSearch [![Nuget](https://img.shields.io/nuget/v/Siganberg.SerilogElasticSearch)](https://www.nuget.org/packages/Siganberg.SerilogElasticSearch/) [![Nuget](https://img.shields.io/nuget/dt/Siganberg.SerilogElasticSearch)](https://www.nuget.org/packages/Siganberg.SerilogElasticSearch/)
 
 
+## What is this library?
+
+This library extend Serilog `UseSerilogRequestLogging` functionality. Using `UseSerilogRequestLogging` is already better than Microsoft way of logging HTTP request. Instead of writing HTTP request information like method, path, timing, status code and exception details in several events, `UseSerilogRequestLogging` collects information during the request (including from IDiagnosticContext) and writes a single event at request completion. This reduced chattiness of the logs.
+
+Extended functionality:
+
+- Hide or omit value in Request Header such as Authorization. Useful for hiding sensitive information in logs. 
+- Control HTTP Request logging dynamically. For example, you don't want to log HTTP request logs from health check, metrics or swagger. Or you can use LaunchDarkly switch to control ON/OFF of HTTP request logging without restarting the application. 
+- Ability to include or exclude HTTP request/response body or headers.
+- Easily able to switch developer view logging or json logging (UseDeveloperView). Developer view logging is much easier to read during development. 
+- Ability to control what elastic properties to include on the log or map to a custom name. Useful if your Kibana is using different index name. 
+
 ## Installation 
 
 **First**, install the Siganberg.SerilogElasticSearch NuGet package into your app.
@@ -13,68 +25,32 @@ dotnet add package Siganberg.SerilogElasticSearch
 
 
 ```c#
-public class Program
+public static void Main(string[] args)
 {
-    public static void Main()
-    {
-        var builder = CreateWebHostBuilder(null);
-        var host = builder.Build();
-            host.Run();
-    }
+    var builder = WebApplication.CreateBuilder(args);
 
-    private static IWebHostBuilder CreateWebHostBuilder(string[] args)
-    {
-        var builder = WebHost.CreateDefaultBuilder(args);
-        builder.UseStartup<Startup>()
-            .SuppressStatusMessages(true)
-            .ConfigureAppConfiguration(ConfigureConfiguration)
-            .UseSerilog((hostingContext, loggerConfiguration) =>
-            {
-                loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
-                if (hostingContext.HostingEnvironment.IsDevelopment())
-                    loggerConfiguration.WriteTo.Console();
-                else
-                    loggerConfiguration.WriteTo.Console(new ElasticSearchFormatter());
-            });
+    builder.UseSerilog(); //-- Switch to Serilog with extended functionality
+    
+    builder.Services.AddControllers();
 
-        return builder;
-    }
+    //-- This is optional Interceptor to control when to log HTTP request. 
+    builder.Services.AddSingleton<IRequestLoggingInterceptor, YourOwnRequestLoggingInterceptor>()
+    
 
-    private static void ConfigureConfiguration(WebHostBuilderContext hostingContext, IConfigurationBuilder config)
-    {
-        var env = hostingContext.HostingEnvironment;
-        config.SetBasePath(env.ContentRootPath)
-            .AddJsonFile("appsettings.json", false, true)
-            .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
-            .AddEnvironmentVariables();
-    }
-}
-```
-
-On `Startup.cs`, add  `app.UseRequestLogging()` as the first line or before any middelware on the Configure method. 
-
-```c#
-public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-{
-    app.UseRequestLogging();
-
-    if (env.IsDevelopment())
+    var app = builder.Build();
+    
+    app.UseRequestLogging(); //-- For logging HTTP Request. Add this before any middleware
+        
+    if (app.Environment.IsDevelopment())
     {
         app.UseDeveloperExceptionPage();
     }
-    app.UseMvc();
-}
-```
+        
+    app.UseRouting();
 
-And if you want an optional `IRequestLoggingInterceptor`, add it on  `ConfigureService` method. 
-
-```c#
-public void ConfigureServices(IServiceCollection services)
-{
-    services.
-        //-- Register custom IRequestLoggingInterceptor. This will override DefaultRequestLoggingInterceptor behavior. 
-        .AddSingleton<IRequestLoggingInterceptor, YourOwnRequestLoggingInterceptor>()
-        .AddMvc();
+    app.UseAuthorization();
+    app.MapControllers();
+    app.Run();
 }
 ```
 
@@ -84,31 +60,54 @@ public void ConfigureServices(IServiceCollection services)
 {
   "Serilog": {
     "MinimumLevel": {
-      "Default": "Information",
-      "Override": {
-        // Set Microsoft.AspNetCore to warning. We already have optimized RequestLogging Middleware.
-        "Microsoft.AspNetCore": "Warning",
-        "System.Net.Http.HttpClient.Default.LogicalHandler": "Information"
-      }
-    },
-    "Enrich": [ "FromLogContext" ],
-    "RequestLoggingOptions" : {
-      "IncludeResponseBody" : "true",
-      "IncludeRequestHeaders" : "false",
-      "ExcludeHeaderNames" : [
-        "Authorization"
-      ]
+      "Default": "Information"
     }
   }
 }
 ```
 
-### Notes: 
+That's it. 
 
-*Use `System.Net.Http.HttpClient.Default.LogicalHandler` to override HttpClient downstream call logs*. 
 
-### Configuration
 
+
+## Advance usage and configuration
+
+
+Sample advance JSON configuration
+
+```json
+{
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information"
+    },
+    "RequestLoggingOptions": {
+      "IncludeResponseBody": "true",
+      "IncludeRequestHeaders": "true",
+      "ExcludeHeaderNames": [
+        "Authorization",
+        "Origin",
+        "Referer"
+      ]
+    },
+    "ElasticMappings": {
+      "SourceContext": "callsite",
+      "RequestMethod": "method"
+    }
+  }
+}
+```
+
+
+*Serilog*
+
+On top of default Serilog configuration, these are configuration for added functionality. 
+
+| Property         | Default | Descriptions                                                                                                          |
+|------------------|---------|-----------------------------------------------------------------------------------------------------------------------|
+| UseDeveloperView | false   | Switch logging format to more compact and readable for developer.                                                     |                                                                                                                                               |
+| ElasticMappings  | SourceContext : callsite <br>RequestMethod : method <br>Path : path <br>QueryString : queryString <br>StatusCode : responseStatus <br>Elapsed : durationMs <br>RequestHeaders : requestHeaders <br>RequestBody : requestBody <br>ResponseBody : responseBody <br>ContentType : contentType <br>ContentLength : contentLength <br>   | Control what properties to include and also there mapping name. You can use this to map to what name in Kibana index. |   
 
 *RequestLoggingOptions*
 
@@ -117,8 +116,12 @@ public void ConfigureServices(IServiceCollection services)
 |     IncludeResponseBody                | false   | When true, it will add middleware to capture and add response body to the RequestLogging. This add overhead and should only use for troubleshooting if necessary.  |                                                                                                                                               |
 |     IncludeRequestHeaders                | true   | Include Request Headers.  |
 |     ExcludeHeaderNames                | empty   | Array of string of header names. Ignored if **IncludeRequestHeaders** is set to **false**. Header name will still be log but value is set to *\<OMITTED\>*  |
+|     ExcludeHeaderNames                | empty   | Array of string of header names. Ignored if **IncludeRequestHeaders** is set to **false**. Header name will still be log but value is set to *\<OMITTED\>*  |
 
-## Controlling RequestLogging dynamically 
+
+
+
+### Controlling RequestLogging dynamically 
 
 By default, there is a registered `DefaultRequestLoggingInterceptor`. This interceptor automatically  filters out request logging for URLs containing either _health_, _swagger_, or _metrics_.
 

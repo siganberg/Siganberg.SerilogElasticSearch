@@ -9,59 +9,59 @@ using Siganberg.SerilogElasticSearch.Middleware;
 using Siganberg.SerilogElasticSearch.Settings;
 using Siganberg.SerilogElasticSearch.Utilities;
 
-namespace Siganberg.SerilogElasticSearch.Extensions
+namespace Siganberg.SerilogElasticSearch.Extensions;
+
+public static class ApplicationBuilderExtension
 {
-    public static class ApplicationBuilderExtension
+    public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder, Func<HttpContext, bool> func = null)
     {
-        public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder, Func<HttpContext, bool> func = null)
+        var context = builder.ApplicationServices.GetService<IHttpContextAccessor>();
+        var requestLoggingInterceptor = builder.ApplicationServices.GetService<IRequestLoggingInterceptor>() 
+                                        ?? DefaultRequestLoggingInterceptor.Instance;
+            
+        var configuration = builder.ApplicationServices.GetRequiredService<IConfiguration>();
+        var settings = configuration.GetSection(SerilogSettings.KeyName).Get<SerilogSettings>();
+        
+            
+        builder.Use((con, next) =>
         {
-            var context = builder.ApplicationServices.GetService<IHttpContextAccessor>();
-            var requestLoggingInterceptor = builder.ApplicationServices.GetService<IRequestLoggingInterceptor>() 
-                                      ?? DefaultRequestLoggingInterceptor.Instance;
+            if (requestLoggingInterceptor?.IncludeRequestWhen(con) ??  true)
+                con.Request.EnableBuffering();
+            return next();
+        });
             
-            var configuration = builder.ApplicationServices.GetRequiredService<IConfiguration>();
-            var settings = configuration.GetSection(SerilogSettings.KeyName).Get<SerilogSettings>();
-            
-            builder.Use((con, next) =>
+        StaticHttpContextAccessor.Configure(context);
+
+        builder.UseMiddleware<CorrelationIdMiddleWare>()
+            .UseSerilogRequestLogging( options =>
             {
-                if (requestLoggingInterceptor?.IncludeRequestWhen(con) ??  true)
-                    con.Request.EnableBuffering();
-                return next();
+                options.GetLevel = (ctx, _, ex) => EvaluateExclusionRules(ctx, ex, func, requestLoggingInterceptor);
             });
+
+        if (settings.RequestLoggingOptions.IncludeResponseBody)
+            builder.UseMiddleware<ResponseLoggerMiddleware>();
+
+        builder.UseMiddleware<RequestLogMiddleware>();
             
-            StaticHttpContextAccessor.Configure(context);
-
-            builder.UseMiddleware<CorrelationIdMiddleWare>()
-                .UseSerilogRequestLogging( options =>
-                {
-                    options.GetLevel = (ctx, _, ex) => EvaluateExclusionRules(ctx, ex, func, requestLoggingInterceptor);
-                });
-
-            if (settings.RequestLoggingOptions.IncludeResponseBody)
-                builder.UseMiddleware<ResponseLoggerMiddleware>();
-
-            builder.UseMiddleware<RequestLogMiddleware>();
-            
-            return builder;
-        }
+        return builder;
+    }
 
 
-        private static LogEventLevel EvaluateExclusionRules(HttpContext ctx, Exception ex, Func<HttpContext, bool> func = null, IRequestLoggingInterceptor interceptor = null)
-        {
-            if (ex != null) return LogEventLevel.Error;
+    private static LogEventLevel EvaluateExclusionRules(HttpContext ctx, Exception ex, Func<HttpContext, bool> func = null, IRequestLoggingInterceptor interceptor = null)
+    {
+        if (ex != null) return LogEventLevel.Error;
 
-            if (ctx.Response.StatusCode >= 500) return LogEventLevel.Error;
+        if (ctx.Response.StatusCode >= 500) return LogEventLevel.Error;
 
-            var result = true;
+        var result = true;
 
-            if (func != null)
-                result = func.Invoke(ctx);
-            else if (interceptor != null)
-                result = interceptor.IncludeRequestWhen(ctx);
+        if (func != null)
+            result = func.Invoke(ctx);
+        else if (interceptor != null)
+            result = interceptor.IncludeRequestWhen(ctx);
 
-            if (result == false) return LogEventLevel.Verbose;
-
-            return LogEventLevel.Information;
-        }
+        return result == false 
+            ? LogEventLevel.Verbose 
+            : LogEventLevel.Information;
     }
 }

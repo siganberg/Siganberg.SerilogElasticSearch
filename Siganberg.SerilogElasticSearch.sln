@@ -8,6 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sources", "Sources", "{F998
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6347E91B-1AF0-495D-A0B9-8398B8C67279}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Siganberg.SerilogElasticSearch.Unit.Tests", "tests\Siganberg.SerilogElasticSearch.Unit.Tests\Siganberg.SerilogElasticSearch.Unit.Tests.csproj", "{FBB3677B-3862-4E65-BA28-96F5EC088551}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,9 +24,14 @@ Global
 		{2459CC28-5900-477E-8AE3-6C3ACDBBF687}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2459CC28-5900-477E-8AE3-6C3ACDBBF687}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2459CC28-5900-477E-8AE3-6C3ACDBBF687}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBB3677B-3862-4E65-BA28-96F5EC088551}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBB3677B-3862-4E65-BA28-96F5EC088551}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBB3677B-3862-4E65-BA28-96F5EC088551}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBB3677B-3862-4E65-BA28-96F5EC088551}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C96D337C-1323-481D-A458-B46CBE3D9929} = {F99851E5-FB2E-4647-B153-47EE34E65BA7}
 		{2459CC28-5900-477E-8AE3-6C3ACDBBF687} = {F99851E5-FB2E-4647-B153-47EE34E65BA7}
+		{FBB3677B-3862-4E65-BA28-96F5EC088551} = {6347E91B-1AF0-495D-A0B9-8398B8C67279}
 	EndGlobalSection
 EndGlobal

@@ -10,127 +10,118 @@ using Serilog.Events;
 using Serilog.Formatting;
 using Siganberg.SerilogElasticSearch.Utilities;
 
-namespace Siganberg.SerilogElasticSearch.Formatter
+namespace Siganberg.SerilogElasticSearch.Formatter;
+
+[ExcludeFromCodeCoverage]
+public class ElasticSearchFormatter : ITextFormatter
 {
-    [ExcludeFromCodeCoverage]
-    public class ElasticSearchFormatter : ITextFormatter
+    private readonly Dictionary<string, string> _mappings; 
+    public ElasticSearchFormatter(Dictionary<string, string> mappings)
     {
-        private readonly Dictionary<string, string> _mappings = new()
+        _mappings = mappings;
+    }
+
+
+    public void Format(LogEvent logEvent, TextWriter output)
+    {
+        output.Write("{");
+
+        output.Write($"\"time\" : \"{DateTime.Now}\"");
+        output.Write($", \"level\" : \"{logEvent.Level.ToString().ToUpper().Replace("INFORMATION", "INFO")}\"");
+        WriteCorrelationId(logEvent, output);
+
+        if (logEvent.Exception == null)
+            WriteMessage(logEvent, output);
+        else
+            WriteExceptionIfNonRequestLogging(logEvent, output);
+
+        WriteMappedProperties(logEvent, output);
+
+        output.Write("}");
+        output.Write(Environment.NewLine);
+    }
+
+    private void WriteMappedProperties(LogEvent logEvent, TextWriter output)
+    {
+        foreach (var mapping in _mappings)
         {
-            {"SourceContext", "callsite"},
-            {"RequestMethod", "method"},
-            {"Path", "path"},
-            {"QueryString", "queryString"},
-            {"StatusCode", "responseStatus"},
-            {"Elapsed", "durationMs"},
-            {"RequestHeaders", "requestHeaders"},
-            {"RequestBody", "requestBody"},
-            {"ResponseBody", "responseBody"},
-            {"ContentType", "contentType"},
-            {"ContentLength", "contentLength"}
-        };
-
-        public void Format(LogEvent logEvent, TextWriter output)
-        {
-            output.Write("{");
-
-            output.Write($"\"time\" : \"{DateTime.Now}\"");
-            output.Write($", \"level\" : \"{logEvent.Level.ToString().ToUpper().Replace("INFORMATION", "INFO")}\"");
-            WriteCorrelationId(logEvent, output);
-
-            if (logEvent.Exception == null)
-                WriteMessage(logEvent, output);
-            else
-                WriteExceptionIfNonRequestLogging(logEvent, output);
-
-            WriteMappedProperties(logEvent, output);
-
-            output.Write("}");
-            output.Write(Environment.NewLine);
-        }
-
-        private void WriteMappedProperties(LogEvent logEvent, TextWriter output)
-        {
-            foreach (var mapping in _mappings)
+            if (!logEvent.Properties.ContainsKey(mapping.Key)) continue;
+            var p = logEvent.Properties[mapping.Key];
+            var keyName = ToCamelCase(mapping.Value);
+            object value = p;
+            switch (keyName)
             {
-                if (!logEvent.Properties.ContainsKey(mapping.Key)) continue;
-                var p = logEvent.Properties[mapping.Key];
-                var keyName = ToCamelCase(mapping.Value);
-                object value = p;
-                switch (keyName)
-                {
-                    case "responseStatus":
-                        value = AutoCorrectResponseStatus(p);
-                        break;
-                    case "requestBody":
-                    case "responseBody":
-                        value = CleanContent(p.ToString());
-                        break;
-                }
-                output.Write($", \"{keyName}\" : {value}");
+                case "responseStatus":
+                    value = AutoCorrectResponseStatus(p);
+                    break;
+                case "requestBody":
+                case "responseBody":
+                    value = CleanContent(p.ToString());
+                    break;
             }
+            output.Write($", \"{keyName}\" : {value}");
         }
+    }
 
-        private object CleanContent(string value)
+    private object CleanContent(string value)
+    {
+        return JsonConvert.ToString(value);
+    }
+
+    private void WriteMessage(LogEvent logEvent, TextWriter output)
+    {
+        if (logEvent.MessageTemplate == null) return;
+        var message = logEvent.MessageTemplate.Text;
+        var matchVariables = Regex.Matches(logEvent.MessageTemplate.Text, "{.*?}")
+            .Select(a => new {Key = a.Value.Replace("{", "").Replace("}", "").Split(":").FirstOrDefault(), Expression = a.Value})
+            .ToList();
+
+        foreach (var variable in matchVariables)
         {
-            return JsonConvert.ToString(value);
+            if (logEvent.Properties.ContainsKey(variable.Key))
+                message = message.Replace(variable.Expression, logEvent.Properties[variable.Key].ToString().Replace("\"", ""));
         }
 
-        private void WriteMessage(LogEvent logEvent, TextWriter output)
-        {
-            if (logEvent.MessageTemplate == null) return;
-            var message = logEvent.MessageTemplate.Text;
-            var matchVariables = Regex.Matches(logEvent.MessageTemplate.Text, "{.*?}")
-                .Select(a => new {Key = a.Value.Replace("{", "").Replace("}", "").Split(":").FirstOrDefault(), Expression = a.Value})
-                .ToList();
+        output.Write($", \"message\" : {CleanContent(message)}");
+    }
 
-            foreach (var variable in matchVariables)
-            {
-                if (logEvent.Properties.ContainsKey(variable.Key))
-                    message = message.Replace(variable.Expression, logEvent.Properties[variable.Key].ToString().Replace("\"", ""));
-            }
+    private  void WriteCorrelationId(LogEvent logEvent, TextWriter output)
+    {
+        logEvent.Properties.TryGetValue("correlationId", out var correlationValue);
+        var correlationId = correlationValue?.ToString();
 
-            output.Write($", \"message\" : {CleanContent(message)}");
-        }
+        if (string.IsNullOrWhiteSpace(correlationId) || correlationId == "null")
+            correlationId = StaticHttpContextAccessor.Current?.TraceIdentifier;
 
-        private  void WriteCorrelationId(LogEvent logEvent, TextWriter output)
-        {
-            logEvent.Properties.TryGetValue("correlationId", out var correlationValue);
-            var correlationId = correlationValue?.ToString();
+        if (!string.IsNullOrWhiteSpace(correlationId))
+            output.Write($",\"correlationId\" : \"{correlationId}\"");
+    }
 
-            if (string.IsNullOrWhiteSpace(correlationId) || correlationId == "null")
-                correlationId = StaticHttpContextAccessor.Current?.TraceIdentifier;
+    private void WriteExceptionIfNonRequestLogging(LogEvent logEvent, TextWriter output)
+    {
+        var length = logEvent.Exception.Message.Length;
+        var shortMessage =  logEvent.Exception.Message.Substring(0, Math.Min(length, 500));
+        if (length > 500) shortMessage += " ...";
 
-            if (!string.IsNullOrWhiteSpace(correlationId))
-                output.Write($",\"correlationId\" : \"{correlationId}\"");
-        }
+        output.Write($", \"message\" : {CleanContent(shortMessage)} ");
 
-        private void WriteExceptionIfNonRequestLogging(LogEvent logEvent, TextWriter output)
-        {
-            var length = logEvent.Exception.Message.Length;
-            var shortMessage =  logEvent.Exception.Message.Substring(0, Math.Min(length, 500));
-            if (length > 500) shortMessage += " ...";
+        if (!logEvent.Properties.ContainsKey("StatusCode"))
+            output.Write($", \"exception\" : {CleanContent(logEvent.Exception.ToString())}");
+    }
 
-            output.Write($", \"message\" : {CleanContent(shortMessage)} ");
+    private object AutoCorrectResponseStatus(LogEventPropertyValue value)
+    {
+        var statusCode = value.ToString();
+        if (statusCode.All(char.IsNumber)) return value;
 
-            if (!logEvent.Properties.ContainsKey("StatusCode"))
-                output.Write($", \"exception\" : {CleanContent(logEvent.Exception.ToString())}");
-        }
+        Enum.TryParse<HttpStatusCode>(statusCode, out var result);
+        return (int) result;
+    }
 
-        private object AutoCorrectResponseStatus(LogEventPropertyValue value)
-        {
-            var statusCode = value.ToString();
-            if (statusCode.All(char.IsNumber)) return value;
-
-            Enum.TryParse<HttpStatusCode>(statusCode, out var result);
-            return (int) result;
-        }
-
-        private string ToCamelCase(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name)) return name;
-            if (name.Length == 1) return name.ToLower();
-            return name.Substring(0, 1).ToLower() + name.Substring(1);
-        }
+    private string ToCamelCase(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return name;
+        if (name.Length == 1) return name.ToLower();
+        return name.Substring(0, 1).ToLower() + name.Substring(1);
     }
 }

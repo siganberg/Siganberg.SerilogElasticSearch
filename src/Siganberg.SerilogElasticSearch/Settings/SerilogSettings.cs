@@ -6,7 +6,11 @@ namespace Siganberg.SerilogElasticSearch.Settings;
 public class SerilogSettings
 {
     public RequestLoggingOptions RequestLoggingOptions { get; set; }
+    public bool UseDeveloperView { get; set; } 
+
     public const string KeyName = "Serilog";
+    
+    public Dictionary<string, string>? ElasticMappings { get; set; } 
 }
 
 public class RequestLoggingOptions
@@ -21,4 +25,6 @@ public class RequestLoggingOptions
             _excludeNames = value.Select(a => a.ToLower()).ToHashSet();
         }
     } 
+    
+
 }       
