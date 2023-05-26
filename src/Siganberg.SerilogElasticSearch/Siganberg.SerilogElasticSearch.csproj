@@ -3,15 +3,14 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <PackageId>Siganberg.SerilogElasticSearch</PackageId>
-        <Version>2.0.11</Version>
+        <Version>2.0.12</Version>
         <Authors>Francis Marasigan</Authors>
         <Company>Siganberg</Company>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Nullable>enable</Nullable>
         <PackageProjectUrl>https://github.com/siganberg/Siganberg.SerilogElasticSearch</PackageProjectUrl>
         <PackageReleaseNotes>
-            - Added options to override mappings. 
-            - Added options to switch to developer view logs. 
-            - Simplify registration of the library with just 2 lines of code. 
+            - Bugfixes.
         </PackageReleaseNotes>
     </PropertyGroup>
 

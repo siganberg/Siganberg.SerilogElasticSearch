@@ -13,9 +13,9 @@ namespace Siganberg.SerilogElasticSearch.Extensions;
 
 public static class ApplicationBuilderExtension
 {
-    public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder, Func<HttpContext, bool> func = null)
+    public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder builder, Func<HttpContext, bool>? func = null)
     {
-        var context = builder.ApplicationServices.GetService<IHttpContextAccessor>();
+        var context = builder.ApplicationServices.GetRequiredService<IHttpContextAccessor>();
         var requestLoggingInterceptor = builder.ApplicationServices.GetService<IRequestLoggingInterceptor>() 
                                         ?? DefaultRequestLoggingInterceptor.Instance;
             
@@ -25,7 +25,7 @@ public static class ApplicationBuilderExtension
             
         builder.Use((con, next) =>
         {
-            if (requestLoggingInterceptor?.IncludeRequestWhen(con) ??  true)
+            if (requestLoggingInterceptor.IncludeRequestWhen(con))
                 con.Request.EnableBuffering();
             return next();
         });
@@ -38,7 +38,7 @@ public static class ApplicationBuilderExtension
                 options.GetLevel = (ctx, _, ex) => EvaluateExclusionRules(ctx, ex, func, requestLoggingInterceptor);
             });
 
-        if (settings.RequestLoggingOptions.IncludeResponseBody)
+        if (settings.RequestLoggingOptions?.IncludeResponseBody == true)
             builder.UseMiddleware<ResponseLoggerMiddleware>();
 
         builder.UseMiddleware<RequestLogMiddleware>();
@@ -47,7 +47,7 @@ public static class ApplicationBuilderExtension
     }
 
 
-    private static LogEventLevel EvaluateExclusionRules(HttpContext ctx, Exception ex, Func<HttpContext, bool> func = null, IRequestLoggingInterceptor interceptor = null)
+    private static LogEventLevel EvaluateExclusionRules(HttpContext ctx, Exception? ex, Func<HttpContext, bool>? func = null, IRequestLoggingInterceptor? interceptor = null)
     {
         if (ex != null) return LogEventLevel.Error;
 

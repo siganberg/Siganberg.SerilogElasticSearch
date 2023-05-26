@@ -5,7 +5,7 @@ namespace Siganberg.SerilogElasticSearch.Settings;
 
 public class SerilogSettings
 {
-    public RequestLoggingOptions RequestLoggingOptions { get; set; }
+    public RequestLoggingOptions? RequestLoggingOptions { get; set; }
     public bool UseDeveloperView { get; set; } 
 
     public const string KeyName = "Serilog";

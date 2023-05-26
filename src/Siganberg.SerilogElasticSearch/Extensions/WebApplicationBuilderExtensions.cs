@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 using Siganberg.SerilogElasticSearch.Formatter;
@@ -11,7 +11,7 @@ namespace Siganberg.SerilogElasticSearch.Extensions;
 
 public static class WebApplicationBuilderExtensions
 {
-    private static Dictionary<string, string> _defaultMapping =  new()
+    private static readonly Dictionary<string, string> DefaultMapping =  new()
     {
         {"SourceContext", "callsite"},
         {"RequestMethod", "method"},
@@ -28,13 +28,14 @@ public static class WebApplicationBuilderExtensions
 
     public static void UseSerilog(this WebApplicationBuilder builder)
     {
-        
+        builder.Services.AddHttpContextAccessor();
         builder.Host.UseSerilog((hostingContext, loggerConfiguration) =>
         {
+            
             loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration);
             var settings = hostingContext.Configuration.GetSection(SerilogSettings.KeyName).Get<SerilogSettings>();
 
-            settings.ElasticMappings ??= _defaultMapping;
+            settings.ElasticMappings ??= DefaultMapping;
             
             if (settings.UseDeveloperView)
                 loggerConfiguration.WriteTo.Console();

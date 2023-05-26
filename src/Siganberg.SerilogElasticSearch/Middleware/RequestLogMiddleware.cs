@@ -28,12 +28,12 @@ public class RequestLogMiddleware
         var requestLoggingInterceptor = httpContext.RequestServices.GetService<IRequestLoggingInterceptor>() 
                                         ?? DefaultRequestLoggingInterceptor.Instance;
 
-        if (requestLoggingInterceptor?.IncludeRequestWhen(httpContext) ?? true)
+        if (requestLoggingInterceptor.IncludeRequestWhen(httpContext))
         {
             var body = await ReadRequestBody(httpContext.Request);
             _diagnosticContext.Set("Path", httpContext.Request.Path);
             _diagnosticContext.Set("QueryString", httpContext.Request.QueryString);
-            var includeRequestHeaders = _settings.RequestLoggingOptions.IncludeRequestHeaders;
+            var includeRequestHeaders = _settings.RequestLoggingOptions?.IncludeRequestHeaders == true;
             if (includeRequestHeaders)
                 _diagnosticContext.Set("RequestHeaders", FormatHeader(httpContext.Request.Headers));
             _diagnosticContext.Set("ContentType", httpContext.Request.ContentType);
@@ -54,9 +54,7 @@ public class RequestLogMiddleware
     }
     private  string FormatHeader(IHeaderDictionary requestHeaders)
     {
-        if (requestHeaders == null) return string.Empty;
-
-        var exclusion = _settings.RequestLoggingOptions.ExcludeHeaderNames;
+        var exclusion = _settings.RequestLoggingOptions?.ExcludeHeaderNames;
 
         if (exclusion == null || exclusion.Count == 0)
             return string.Join("\\n", requestHeaders);
